@@ -1,0 +1,35 @@
+ @keyframes slide-down {
+   from {
+     opacity: 0;
+     transform: translateY(-100%);
+   }
+
+   to {
+     opacity: 1;
+     transform: translateY(0);
+   }
+ }
+
+ .animate-slide-down {
+   animation: slide-down 0.3s ease-out;
+ }
+
+ .carousel-container {
+  width: 100%;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+}
+
+.carousel-image {
+  min-width: 100%;
+  pointer-events: none;
+  user-select: none;
+  object-fit: cover;
+  height: 300px; /* تقدر تغير الطول على حسب احتياجك */
+}

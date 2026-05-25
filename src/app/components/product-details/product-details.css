@@ -1,0 +1,164 @@
+.line-through-diagonal::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 120%;
+  height: 2px;
+  background-color: black;
+  transform: rotate(-25deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+
+
+.text-gray-300 {
+  color: #d1d5db;
+}
+
+.text-yellow-400 {
+  color: #fbbf24;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.swal-compact.swal2-popup {
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(0, 0, 0, .06);
+}
+
+.swal-title {
+  font-size: 1.05rem;
+  margin-bottom: .2rem;
+}
+
+.bg-rgb-disabled {
+  background-color: rgb(117, 117, 117);
+}
+
+/* لكل label */
+.size-label {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  font-size: 0.875rem;
+  /* text-sm */
+  transition: all 0.3s;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  /* زيادة المساحة الداخلية */
+  min-width: 80px;
+  /* أقل عرض لكل label */
+  border-radius: 9999px;
+}
+
+/* العنصر المحدد */
+.size-label.selected {
+  background-color: black;
+  color: white;
+  font-size: 1.125rem;
+  /* text-lg */
+  border-color: black;
+}
+
+/* الكمية صفر */
+.size-label.out-of-stock {
+  position: relative;
+  /* ضروري للخط */
+  background-color: #ccc;
+  /* خلفية رمادية */
+  color: black;
+  /* الخط أسود */
+  font-weight: bold;
+  /* الخط عريض */
+  cursor: not-allowed;
+}
+
+/* نضيف خط يغطي الليبل كله */
+.size-label.out-of-stock::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: rgb(0, 0, 0);
+  transform: translateY(-50%) rotate(-45deg);
+  /* الخط مائل */
+  transform-origin: center;
+  /* مركز الدوران */
+}
+
+.details-content ul {
+  list-style: disc !important;
+  /* اجبر ظهور النقاط */
+  padding-left: 1.5rem !important;
+  /* عشان تكون النقاط على اليسار */
+  margin: 0.5rem 0;
+  /* مسافة بين العناصر */
+}
+
+.details-content li {
+  margin-bottom: 0.25rem;
+  /* مسافة صغيرة بين العناصر */
+}
+
+.product-description ::ng-deep * {
+  max-width: 100% !important;
+  word-wrap: break-word;
+}
+
+.product-description ::ng-deep img {
+  height: auto !important;
+  max-width: 100% !important;
+  display: block;
+  margin: 1rem auto;
+}
+
+.product-description ::ng-deep table {
+  width: 100% !important;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .product-description ::ng-deep table {
+    font-size: 14px;
+  }
+}
+
+.product-description ::ng-deep p,
+.product-description ::ng-deep span,
+.product-description ::ng-deep div {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+
+  .product-description ::ng-deep p,
+  .product-description ::ng-deep span,
+  .product-description ::ng-deep div {
+    font-size: 14px;
+  }
+}
+
+.product-description ::ng-deep ul,
+.product-description ::ng-deep ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.product-description ::ng-deep a {
+  word-break: break-word;
+  color: inherit;
+  text-decoration: underline;
+}

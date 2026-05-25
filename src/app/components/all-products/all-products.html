@@ -1,0 +1,66 @@
+<h2 class="font-bold text-3xl text-center ms-4 mt-15">ALL PRODUCTS</h2>
+
+<div class="flex flex-col lg:flex-row mt-5">
+  <!-- منتجات -->
+  <section
+    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 lg:px-8 mt-6 lg:mt-0 w-full"
+  >
+    @for (prd of filteredProducts; track $index;) {
+    <section class="rounded-lg overflow-hidden flex flex-col hover:scale-110">
+      <a
+        [routerLink]="['/product-details', prd.id]"
+        class="flex flex-col items-center mb-4"
+      >
+        <div class="relative h-70 lg:h-100 w-full overflow-hidden group">
+          <!-- الصورة الأساسية -->
+          <img
+            [src]="getImageUrl(prd, 0)"
+            [alt]="prd.name"
+            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"
+          />
+
+          <!-- الصورة الثانية تظهر مع الهوفر -->
+          <img
+            [src]="getImageUrl(prd, 1)"
+            [alt]="prd.name + ' alt'"
+            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"
+          />
+        </div>
+
+        <h3 class="mt-1 text-lg font-bold text-black sm:text-xl">
+          {{prd.name}}
+        </h3>
+        <div>
+          @if(prd.discountPercentage > 0) {
+          <p style="color: #757575" class="mt-1 line-through">
+            {{prd.price | currency : 'EGP ' : 'code'}}
+          </p>
+          <p class="text-black font-bold mt-1">
+            {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+          </p>
+          } @else {
+          <p class="mt-2 font-bold text-black">
+            {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+          </p>
+          }
+        </div>
+      </a>
+    </section>
+    } @if(filteredProducts.length === 0) {
+    <section class="flex justify-center items-center mx-auto px-8">
+      <h3 style="color: #757575" class="mt-4 text-lg font-bold sm:text-xl">
+        No Products.
+      </h3>
+    </section>
+    }
+  </section>
+</div>
+
+@if(filteredProducts.length !== 0) {
+<app-pagination
+  [currentPageIndex]="currentPageIndex"
+  [totalPages]="totalPages"
+  (pageChange)="changePage($event)"
+>
+</app-pagination>
+}

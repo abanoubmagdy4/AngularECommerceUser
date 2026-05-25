@@ -1,0 +1,53 @@
+<div class="p-4">
+  <h2
+    class="text-2xl font-bold text-center text-dark-600 dark:text-gray-300 mb-6"
+  >
+    Search Results
+  </h2>
+
+  <section
+    class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-8 mt-6"
+  >
+    @for (res of results; track $index;) {
+    <section
+      class="rounded-lg overflow-hidden flex flex-col"
+      data-aos="zoom-in"
+      data-aos-duration="500"
+      data-aos-offset="100"
+    >
+      <a
+        [routerLink]="['/product-details', res.product.productId]"
+        class="flex flex-col items-center mb-6"
+      >
+        <div class="relative h-96 w-full overflow-hidden group">
+          <img
+            [src]="getImageUrl(res.product.imgReference, 0)"
+            [alt]="res.product.name"
+            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"
+          />
+          <img
+            [src]="getImageUrl(res.product.imgReference, 1)"
+            [alt]="res.product.name + ' alt'"
+            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"
+          />
+        </div>
+
+        <h3 class="mt-4 text-lg font-bold text-gray-900 sm:text-xl">
+          {{ res.product.name }}
+        </h3>
+      </a>
+
+      <!-- ✅ التحليل من الذكاء الاصطناعي -->
+      <div class="mt-2 px-2 text-sm text-gray-700 dark:text-gray-200">
+        {{ res.analysis }}
+      </div>
+    </section>
+    }
+  </section>
+
+  @if(results.length === 0) {
+  <div class="text-center mt-12 text-gray-500 text-xl">
+    No products found for this image.
+  </div>
+  }
+</div>

@@ -1,0 +1,41 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: white;
+  /* الخلفية بيضا بالكامل */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 600ms ease;
+  /* انيميشن الاختفاء تدريجي */
+}
+
+.overlay.fade-in {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.overlay.fade-out {
+  opacity: 0;
+  /* تختفي تدريجي */
+}
+
+.overlay:not(.fade-out) {
+  pointer-events: all;
+}
+
+.custom-spinner {
+  max-width: 250px;
+  width: 100%;
+}
+
+.custom-spinner img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  opacity: 1;
+  /* الصورة واضحة طول الوقت */
+}

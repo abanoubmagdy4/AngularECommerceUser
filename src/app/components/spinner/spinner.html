@@ -1,0 +1,10 @@
+<div
+  *ngIf="isVisible || isFadingOut"
+  class="overlay"
+  [class.fade-in]="isVisible  && !isFadingOut"
+  [class.fade-out]="isFadingOut"
+>
+  <div class="custom-spinner">
+    <img src="assets/logo $/loogoooo.png" alt="Loading" />
+  </div>
+</div>

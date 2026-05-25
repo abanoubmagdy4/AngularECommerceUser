@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+@import url('~quill/dist/quill.snow.css');
+
+@font-face {
+  font-family: 'HelveticaCustom';
+  src: url('/assets/fonts/Helvetica/Helvetica-Bold.woff2') format('woff2'),
+       url('/assets/fonts/Helvetica/Helvetica-Bold.woff') format('woff'),
+       url('/assets/fonts/Helvetica/Helvetica-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* تخلي خلفية الديالوج شفافة وتشيل الحافة */
+::ng-deep .no-padding-dialog .mat-dialog-container {
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* اختيار إضافي لو عايز تخفف الخلفية اللي ورا البوب أب */
+::ng-deep .custom-backdrop {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* الخط الأساسي للشكل كله */
+body {
+  font-family: 'HelveticaCustom', Helvetica, Arial, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 150%;
+  margin: 0;
+  padding: 0;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: -1px; /* ✨ قلل المسافات */
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'HelveticaCustom', Helvetica, Arial, sans-serif !important;
+    letter-spacing: -1px; /* ✨ قلل المسافات */
+
+}
+
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+/* === Scrollbar Styles === */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px 50px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #000;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* ✅ يشيل الخلفية البيضا والـ shadow والـ padding من الدايلوج */
+.no-padding-dialog .mat-dialog-container {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* ✅ يخلي الخلفية اللي ورا البوب أب شفافة */
+.custom-backdrop {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.product-description ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem;
+}
+
+.product-description ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem;
+}
+
+.product-description li {
+    margin-bottom: 0.25rem;
+}

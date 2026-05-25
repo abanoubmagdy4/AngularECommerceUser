@@ -1,0 +1,46 @@
+.slides-container {
+  display: flex;
+  height: 100%;
+  width: calc(100vw * 3); /* 3 صور */
+  cursor: grab;
+}
+
+.slides-container:active {
+  cursor: grabbing;
+}
+
+.slides-container img {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  flex-shrink: 0;
+  user-select: none;
+  pointer-events: none;
+}
+.dots-container {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.dot {
+  margin-top: 15px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dot.active {
+  background-color: white;
+}
+.shop-now-btn {
+  font-family: 'HelveticaCustom', Helvetica, Arial, sans-serif !important;
+  text-transform: uppercase;
+}
