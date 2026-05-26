@@ -2,6 +2,7 @@ import {
   Component,
   Inject,
   OnInit,
+  OnDestroy,
   ElementRef,
   ViewChild,
 } from '@angular/core';
@@ -9,16 +10,27 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PLATFORM_ID } from '@angular/core';
 import { NewArrival } from '../new-arrival/new-arrival';
+import { ExploreStyles } from '../explore-styles/explore-styles';
+import { DiscountProductsComponent } from '../discount-Products/discount-Products';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, NewArrival, TranslateModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    NewArrival,
+    ExploreStyles,
+    DiscountProductsComponent,
+    TranslateModule,
+  ],
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
+  private intervalId: any;
+  private resizeHandler: any;
   @ViewChild('slidesContainer') slidesContainer!: ElementRef<HTMLDivElement>;
 
   isMobile = false;
@@ -36,9 +48,24 @@ export class Home implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.isMobile = window.innerWidth <= 768;
 
-      setInterval(() => {
+      this.intervalId = setInterval(() => {
         this.nextSlide();
       }, 5000);
+
+      this.resizeHandler = () => {
+        this.isMobile = window.innerWidth <= 768;
+        this.setPositionByIndex();
+      };
+      window.addEventListener('resize', this.resizeHandler);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+    if (isPlatformBrowser(this.platformId) && this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
     }
   }
 

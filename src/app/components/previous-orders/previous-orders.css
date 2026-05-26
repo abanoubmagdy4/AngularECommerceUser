@@ -199,6 +199,17 @@
   }
 }
 
+/* Responsive font size for small screens */
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 1.75rem;
+  }
+
+  .filter-count {
+    font-size: 0.65rem;
+  }
+}
+
 /* Orders List */
 .orders-list {
   display: flex;

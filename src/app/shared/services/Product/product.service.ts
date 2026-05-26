@@ -24,6 +24,7 @@ export class ProductService {
     minPrice?: number,
     maxPrice?: number,
     isNewArrival?: boolean,
+    hasDiscount?: boolean,
     sortBy?: string,
     sortOrder?: string,
   ): Observable<PaginatedResult<IProduct[]>> {
@@ -38,6 +39,7 @@ export class ProductService {
     if (maxPrice != null && maxPrice !== undefined)
       params = params.set('MaxPrice', maxPrice);
     if (isNewArrival != null) params = params.set('isNewArrival', isNewArrival);
+    if (hasDiscount != null) params = params.set('hasDiscount', hasDiscount);
     if (sortBy) params = params.set('SortBy', sortBy);
     if (sortOrder) params = params.set('SortOrder', sortOrder);
 

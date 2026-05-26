@@ -1,14 +1,63 @@
-<section class="flex flex-col mx-auto px-8 mt-15 gap-10">
-  <h2 class="font-bold text-2xl ms-4">{{ 'DISCOUNT_PRODUCTS.TITLE' | translate }}</h2>
-  <section class="flex justify-between flex-wrap mx-auto px-8">
+@if(displayProducts.length > 0) {
+<div class="flex flex-col items-center">
+  <h2 class="font-bold text-4xl ms-4 mt-15 text-center">{{ 'DISCOUNT_PRODUCTS.TITLE' | translate }}</h2>
 
-    <a href="#" class="flex flex-col items-center mb-20">
-      <img alt="" src="https://liztressens.com/cdn/shop/files/1.png?v=1749968107&width=500"
-        class="h-64 w-full object-cover sm:h-80 lg:h-96" />
+  <div class="flex flex-col lg:flex-row mt-5 w-full">
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6 px-4 lg:px-8 mt-6 lg:mt-0 w-full">
+      @for (prd of displayProducts; track $index) {
+      <section class="rounded-lg overflow-hidden flex flex-col hover:scale-110">
+        <a [routerLink]="['/product-details', prd.id]" class="flex flex-col items-center mb-4">
+          <div class="relative h-64 sm:h-72 lg:h-80 w-full overflow-hidden group">
+            <!-- Sale Badge -->
+            @if(calculateDiscountPercentage(prd) > 0) {
+            <div class="absolute top-3 left-3 z-10">
+              <div
+                class="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                -{{calculateDiscountPercentage(prd)}}%
+              </div>
+            </div>
+            }
 
-      <h3 class="mt-4 text-lg font-bold text-gray-900 sm:text-xl">{{ 'DISCOUNT_PRODUCTS.COMING_SOON' | translate }}</h3>
+            <!-- الصورة الأساسية -->
+            <img [src]="getImageUrl(prd, 0)" [alt]="prd | localizedName"
+              class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0" />
 
-      <p class="mt-2 max-w-sm text-black">LE 500.00 EGP </p>
+            <!-- الصورة الثانية تظهر مع الهوفر -->
+            <img [src]="getImageUrl(prd, 1)" [alt]="(prd | localizedName) + ' alt'"
+              class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
+          </div>
+
+          <h3 class="mt-4 text-lg font-bold text-gray-900 sm:text-xl">
+            {{ prd | localizedName }}
+          </h3>
+          @if(calculateDiscountPercentage(prd) > 0) {
+          <p style="color: #4e4e4e" class="mt-1 line-through">
+            {{prd.price | currency : 'EGP ' : 'code'}}
+          </p>
+          <p class="text-black font-bold mt-1">
+            {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+          </p>
+          } @else {
+          <p class="mt-2 font-bold text-black">
+            {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+          </p>
+          }
+        </a>
+      </section>
+      }
+    </section>
+  </div>
+
+  @if(!displayLimit) {
+  <app-pagination [currentPageIndex]="currentPageIndex" [totalPages]="totalPages" (pageChange)="changePage($event)">
+  </app-pagination>
+  }
+
+  <div class="section-more-wrapper">
+    <a [routerLink]="displayLimit ? '/discount-products' : '/allProducts'"
+      [queryParams]="displayLimit ? {} : { discount: true }" class="section-more-button">
+      {{ 'COMMON.VIEW_ALL' | translate }}
     </a>
-  </section>
-</section>
+  </div>
+</div>
+}

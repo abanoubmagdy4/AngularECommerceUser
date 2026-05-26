@@ -1,7 +1,8 @@
 .slides-container {
   display: flex;
   height: 100%;
-  width: calc(100vw * 3); /* 3 صور */
+  width: 300%;
+  /* 3 صور */
   cursor: grab;
 }
 
@@ -17,6 +18,7 @@
   user-select: none;
   pointer-events: none;
 }
+
 .dots-container {
   position: absolute;
   bottom: 30px;
@@ -40,7 +42,15 @@
 .dot.active {
   background-color: white;
 }
+
 .shop-now-btn {
   font-family: 'HelveticaCustom', Helvetica, Arial, sans-serif !important;
   text-transform: uppercase;
+}
+
+/* Responsive font size for small screens */
+@media (max-width: 768px) {
+  .shop-now-btn {
+    font-size: 0.875rem;
+  }
 }

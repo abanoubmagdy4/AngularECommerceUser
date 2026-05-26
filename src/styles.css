@@ -38,6 +38,13 @@ body {
     /* ✨ قلل المسافات */
 }
 
+/* Responsive font size for small screens */
+@media (max-width: 768px) {
+    body {
+        font-size: 13px;
+    }
+}
+
 
 h1,
 h2,

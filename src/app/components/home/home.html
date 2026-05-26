@@ -1,7 +1,7 @@
-<section class="relative w-full h-screen overflow-hidden">
+<section class="relative w-full min-h-screen overflow-hidden">
 
   <!-- Slides container -->
-  <div #slidesContainer class="flex h-full w-full">
+  <div #slidesContainer class="slides-container flex h-full w-full">
     <img *ngFor="let image of images; let i = index" [src]="isMobile ? image.mobile : image.desktop"
       class="w-full h-full object-cover flex-shrink-0" [attr.alt]="'HOME.SLIDE' | translate" />
   </div>
@@ -13,11 +13,13 @@
   </a>
 
   <!-- Dots -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
+  <div class="dots-container absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
     <span *ngFor="let image of images; let i = index" (click)="goToSlide(i)" [class.active]="currentSlide === i"
       class="dot"></span>
 
   </div>
 </section>
 
-<app-new-arrival></app-new-arrival>
+<app-new-arrival [displayLimit]="3"></app-new-arrival>
+<app-explore-styles></app-explore-styles>
+<app-discount-Products [displayLimit]="3"></app-discount-Products>

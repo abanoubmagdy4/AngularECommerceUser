@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../shared/services/Product/product.service';
 import { IProduct } from '../../models/iproduct';
 import { CommonModule, CurrencyPipe } from '@angular/common';
@@ -45,10 +46,26 @@ export class AllProducts implements OnInit {
     private _ProductService: ProductService,
     private realTimeService: RealTimeService,
     private languageService: LanguageService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
+    this.route.queryParamMap.subscribe((params) => {
+      const isNewArrival = params.get('isNewArrival') === 'true';
+      const hasDiscount = params.get('discount') === 'true';
+      const categoryId = params.get('categoryId');
+
+      if (isNewArrival || hasDiscount || categoryId) {
+        this.loadFilteredProducts(
+          isNewArrival,
+          hasDiscount,
+          categoryId ? Number(categoryId) : undefined,
+        );
+      } else {
+        this.loadProducts();
+      }
+    });
+
     this.realTimeService.onNewProductsArrived((newProducts) => {
       // بس لو المستخدم في أول صفحة
       if (this.currentPageIndex === 1) {
@@ -60,10 +77,36 @@ export class AllProducts implements OnInit {
       }
     });
   }
+
+  loadFilteredProducts(
+    isNewArrival: boolean,
+    hasDiscount: boolean,
+    categoryId?: number,
+  ): void {
+    this._ProductService
+      .getPaginatedProducts(
+        1,
+        12,
+        '',
+        categoryId,
+        undefined,
+        undefined,
+        isNewArrival,
+        hasDiscount,
+        undefined,
+      )
+      .subscribe({
+        next: (response) => {
+          this.filteredProducts = response.items;
+          this.currentPageIndex = response.pageIndex;
+          this.totalPages = response.totalPages;
+        },
+        error: (err) => {},
+      });
+  }
   applyFilters(filters: ProductFilters) {
     this.activeFilters = filters;
     this.currentPageIndex = 1;
-    console.log('Applying filters:', filters);
     this._ProductService
       .getPaginatedProducts(
         1,
@@ -72,6 +115,7 @@ export class AllProducts implements OnInit {
         filters.categoryId,
         filters.minPrice,
         filters.maxPrice,
+        undefined,
         undefined,
         filters.sortBy,
       )

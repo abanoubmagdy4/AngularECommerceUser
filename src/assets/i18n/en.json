@@ -254,7 +254,8 @@
     "BESTSELLERS": "Bestsellers",
     "NEW_ARRIVALS": "NEW ARRIVALS",
     "NO_PRODUCTS": "No Products.",
-    "SLIDE": "Slide"
+    "SLIDE": "Slide",
+    "EXPLORE_MORE_STYLES": "EXPLORE MORE STYLES"
   },
   "NEW_ARRIVAL": {
     "TITLE": "NEW ARRIVALS",
@@ -467,5 +468,28 @@
     "MIN_LENGTH": "Minimum {{min}} characters required.",
     "INVALID_PHONE": "Please enter a valid Egyptian phone number.",
     "INVALID_VALUE": "Please enter a valid value."
+  },
+  "ENUMS": {
+    "ORDER_STATUS": {
+      "CREATED": "Created",
+      "AWAITING_PAYMENT": "Awaiting Payment",
+      "PROCESSING": "Processing",
+      "CANCELLED": "Cancelled",
+      "RETURNED": "Returned"
+    },
+    "PAYMENT_METHODS": {
+      "ONLINE": "Online",
+      "COD": "Cash on Delivery",
+      "CARD": "Credit Card",
+      "WALLET": "Mobile Wallet"
+    },
+    "SHIPPING_STATUS": {
+      "NOT_APPLICABLE": "Not Applicable",
+      "NOT_SHIPPED": "Not Shipped",
+      "READY_TO_SHIP": "Ready to Ship",
+      "SHIPPED": "Shipped",
+      "OUT_FOR_DELIVERY": "Out for Delivery",
+      "DELIVERED": "Delivered"
+    }
   }
 }

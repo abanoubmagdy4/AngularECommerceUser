@@ -1,4 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   Component,
   OnInit,
@@ -17,12 +18,22 @@ import { Login } from '../login/login';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CartItemService } from '../../shared/services/cart/cart.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { LanguageService } from '../../shared/services/language/language.service';
+import {
+  LanguageService,
+  Language,
+} from '../../shared/services/language/language.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatDialogModule, Cart, TranslateModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    MatDialogModule,
+    Cart,
+    TranslateModule,
+  ],
   templateUrl: './header.html',
   styleUrls: ['./header.css'],
 })
@@ -31,7 +42,10 @@ export class Header implements OnInit {
   isCartVisible = false;
   isProfileVisible = false;
   isMobileMenuVisible = false;
+  isSearchVisible = false;
+  isLanguageDropdownVisible = false;
   cartCount = 0; // Cart counter
+  searchQuery = '';
 
   constructor(
     private cartservice: CartItemService,
@@ -110,6 +124,47 @@ export class Header implements OnInit {
   closeMobileMenu() {
     this.isMobileMenuVisible = false;
   }
+
+  toggleSearch() {
+    this.isSearchVisible = !this.isSearchVisible;
+    if (this.isSearchVisible) {
+      setTimeout(() => {
+        const searchInput = document.getElementById('search-input');
+        searchInput?.focus();
+      }, 100);
+    }
+  }
+
+  closeSearch() {
+    this.isSearchVisible = false;
+    this.searchQuery = '';
+  }
+
+  performSearch() {
+    if (this.searchQuery.trim()) {
+      this.router.navigate(['/search-results'], {
+        state: { query: this.searchQuery },
+      });
+      this.closeSearch();
+    }
+  }
+
+  onSearchKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.performSearch();
+    } else if (event.key === 'Escape') {
+      this.closeSearch();
+    }
+  }
+
+  toggleLanguageDropdown() {
+    this.isLanguageDropdownVisible = !this.isLanguageDropdownVisible;
+  }
+
+  setLanguage(lang: Language) {
+    this.languageService.setLanguage(lang);
+    this.isLanguageDropdownVisible = false;
+  }
   @HostListener('document:click', ['$event'])
   handleClickOutside(event: Event) {
     const targetElement = event.target as HTMLElement;
@@ -119,6 +174,8 @@ export class Header implements OnInit {
       this.isCartVisible = false;
       this.isProfileVisible = false;
       this.isMobileMenuVisible = false;
+      this.isSearchVisible = false;
+      this.isLanguageDropdownVisible = false;
     }
   }
 }

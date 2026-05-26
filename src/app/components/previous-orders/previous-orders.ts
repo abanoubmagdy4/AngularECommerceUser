@@ -86,26 +86,47 @@ export class PreviousOrders implements OnInit {
 
   // Translate status label
   getStepLabel(status: string): string {
-    const key = `PREVIOUS_ORDERS.STEP_${status.toUpperCase().replace(/[^A-Z]/g, '_')}`;
+    const statusMap: Record<string, string> = {
+      NotApplicable: 'ENUMS.SHIPPING_STATUS.NOT_APPLICABLE',
+      NotShipped: 'ENUMS.SHIPPING_STATUS.NOT_SHIPPED',
+      ReadyToShip: 'ENUMS.SHIPPING_STATUS.READY_TO_SHIP',
+      Shipped: 'ENUMS.SHIPPING_STATUS.SHIPPED',
+      OutForDelivery: 'ENUMS.SHIPPING_STATUS.OUT_FOR_DELIVERY',
+      Delivered: 'ENUMS.SHIPPING_STATUS.DELIVERED',
+    };
+    const key =
+      statusMap[status] ||
+      `PREVIOUS_ORDERS.STEP_${status.toUpperCase().replace(/[^A-Z]/g, '_')}`;
     const translation = this.translate.instant(key);
     return translation !== key ? translation : status;
   }
 
   // Translate order status
   getOrderStatusLabel(status: string): string {
-    const key = `ORDER.${status.toUpperCase()}`;
+    const statusMap: Record<string, string> = {
+      Created: 'ENUMS.ORDER_STATUS.CREATED',
+      AwaitingPayment: 'ENUMS.ORDER_STATUS.AWAITING_PAYMENT',
+      Processing: 'ENUMS.ORDER_STATUS.PROCESSING',
+      Cancelled: 'ENUMS.ORDER_STATUS.CANCELLED',
+      Returned: 'ENUMS.ORDER_STATUS.RETURNED',
+    };
+    const key = statusMap[status] || `ORDER.${status.toUpperCase()}`;
     const translation = this.translate.instant(key);
     return translation !== key ? translation : status;
   }
 
   // Translate payment method
   getPaymentMethodLabel(method: string): string {
-    if (method === 'COD') {
-      return this.translate.instant('CHECKOUT.CASH_ON_DELIVERY');
-    } else if (method === 'CreditCard') {
-      return this.translate.instant('CHECKOUT.CREDIT_CARD');
-    }
-    return method;
+    const methodMap: Record<string, string> = {
+      Online: 'ENUMS.PAYMENT_METHODS.ONLINE',
+      COD: 'ENUMS.PAYMENT_METHODS.COD',
+      card: 'ENUMS.PAYMENT_METHODS.CARD',
+      wallet: 'ENUMS.PAYMENT_METHODS.WALLET',
+      CreditCard: 'ENUMS.PAYMENT_METHODS.CARD',
+    };
+    const key = methodMap[method] || method;
+    const translation = this.translate.instant(key);
+    return translation !== key ? translation : method;
   }
 
   // Filtered orders

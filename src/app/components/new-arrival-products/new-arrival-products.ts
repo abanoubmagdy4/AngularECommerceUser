@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
-import { DiscountedProductsService } from '../../shared/services/discount-products/discount-products.service';
+import { NewArrivalsService } from '../../shared/services/new-arrivals/new-arrivals.service';
 import { IProduct } from '../../models/iproduct';
 import { Pagination } from '../pagination/pagination';
 import { environment } from '../../../environments/environment.development';
@@ -10,10 +10,10 @@ import { RealTimeService } from '../../shared/services/RealTime/real-time-servic
 import { LocalizedNamePipe } from '../../shared/pipes/localized-name.pipe';
 
 @Component({
-  selector: 'app-discount-Products',
+  selector: 'app-new-arrival-products',
   standalone: true,
-  templateUrl: './discount-Products.html',
-  styleUrls: ['./discount-Products.css'],
+  templateUrl: './new-arrival-products.html',
+  styleUrls: ['./new-arrival-products.css'],
   imports: [
     CommonModule,
     CurrencyPipe,
@@ -23,34 +23,32 @@ import { LocalizedNamePipe } from '../../shared/pipes/localized-name.pipe';
     LocalizedNamePipe,
   ],
 })
-export class DiscountProductsComponent implements OnInit {
+export class NewArrivalProductsComponent implements OnInit {
   @Input() displayLimit: number | null = null;
   filteredProducts: IProduct[] = [] as IProduct[];
   currentPageIndex = 1;
   totalPages = 1;
 
   constructor(
-    private _DiscountedProductsService: DiscountedProductsService,
+    private _NewArrivalsService: NewArrivalsService,
     private realTimeService: RealTimeService,
   ) {}
 
   ngOnInit() {
-    this.loadDiscountProducts();
+    this.loadNewArrivalProducts();
     this.realTimeService.onNewProductsArrived((newProducts) => {
       if (this.currentPageIndex === 1) {
         const totalPerPage = 12;
-        const updatedProducts = [...newProducts, ...this.filteredProducts];
+        const updatedProducts = this.sortProductsByDiscountAndPrice([...newProducts, ...this.filteredProducts]);
         this.filteredProducts = updatedProducts.slice(0, totalPerPage);
       }
     });
   }
 
-  loadDiscountProducts(pageIndex: number = 1): void {
-    this._DiscountedProductsService.getDiscountProducts(pageIndex).subscribe({
+  loadNewArrivalProducts(pageIndex: number = 1): void {
+    this._NewArrivalsService.getNewArrivalProducts(pageIndex).subscribe({
       next: (response) => {
-        this.filteredProducts = response.items
-          .filter((p) => p.discountPercentage > 0)
-          .sort((a, b) => b.discountPercentage - a.discountPercentage);
+        this.filteredProducts = this.sortProductsByDiscountAndPrice(response.items);
         this.currentPageIndex = response.pageIndex;
         this.totalPages = response.totalPages;
       },
@@ -58,10 +56,35 @@ export class DiscountProductsComponent implements OnInit {
     });
   }
 
+  sortProductsByDiscountAndPrice(products: IProduct[]): IProduct[] {
+    return products.sort((a, b) => {
+      const discountA = this.calculateDiscountPercentage(a);
+      const discountB = this.calculateDiscountPercentage(b);
+
+      // If both have discounts, sort by highest discount first
+      if (discountA > 0 && discountB > 0) {
+        return discountB - discountA;
+      }
+
+      // If only A has discount, A comes first
+      if (discountA > 0 && discountB === 0) {
+        return -1;
+      }
+
+      // If only B has discount, B comes first
+      if (discountA === 0 && discountB > 0) {
+        return 1;
+      }
+
+      // If neither has discount, sort by lowest price first
+      return a.priceAfterDiscount - b.priceAfterDiscount;
+    });
+  }
+
   changePage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPageIndex = page;
-      this.loadDiscountProducts(page);
+      this.loadNewArrivalProducts(page);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }

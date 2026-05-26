@@ -3,16 +3,21 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment.development';
 import { IProduct } from '../../../models/iproduct';
 import { IPaginate } from '../../../models/ipaginate';
+import { PaginatedResult } from '../../../models/paginated-result';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NewArrivalsService {
-
-  constructor(private _httpClient: HttpClient) { }
+  constructor(private _httpClient: HttpClient) {}
 
   getNewArrivalProducts(pageIndex: number) {
     const url = `${environment.urlPath}Products/new-arrivals?PageIndex=${pageIndex}`;
+    return this._httpClient.get<IPaginate<IProduct>>(url);
+  }
+
+  getAllProducts(pageIndex: number = 1, pageSize: number = 100) {
+    const url = `${environment.urlPath}Products/Custpaginated?PageIndex=${pageIndex}&PageSize=${pageSize}`;
     return this._httpClient.get<IPaginate<IProduct>>(url);
   }
 }

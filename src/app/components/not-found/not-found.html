@@ -12,8 +12,10 @@
       <h2 class="text-3xl font-semibold mb-6">{{ 'ORDER_SUCCESS.SUMMARY_TITLE' | translate }}</h2>
 
       <p><strong>{{ 'ORDER_SUCCESS.ORDER_NUMBER' | translate }}</strong> #{{ orderSummary.orderNumber }}</p>
-      <p><strong>{{ 'ORDER_SUCCESS.PAYMENT_METHOD' | translate }}</strong> {{ orderSummary.paymentMethod }}</p>
-      <p><strong>{{ 'ORDER_SUCCESS.ORDER_STATUS' | translate }}</strong> {{ orderSummary.orderStatus }}</p>
+      <p><strong>{{ 'ORDER_SUCCESS.PAYMENT_METHOD' | translate }}</strong> {{
+        getPaymentMethodLabel(orderSummary.paymentMethod) }}</p>
+      <p><strong>{{ 'ORDER_SUCCESS.ORDER_STATUS' | translate }}</strong> {{
+        getOrderStatusLabel(orderSummary.orderStatus) }}</p>
       <p><strong>{{ 'ORDER_SUCCESS.CREATED_AT' | translate }}</strong> {{ orderSummary.createdAt | date:'medium' }}</p>
 
       <div class="my-6 border-t border-gray-300"></div>

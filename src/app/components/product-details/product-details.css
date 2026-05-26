@@ -149,6 +149,20 @@
   .product-description ::ng-deep div {
     font-size: 14px;
   }
+
+  .swal-title {
+    font-size: 0.9rem;
+  }
+
+  .size-label {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    min-width: 60px;
+  }
+
+  .size-label.selected {
+    font-size: 0.875rem;
+  }
 }
 
 .product-description ::ng-deep ul,

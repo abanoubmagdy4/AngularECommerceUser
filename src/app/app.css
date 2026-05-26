@@ -1,0 +1,49 @@
+/* Global Responsive Foundation */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+}
+
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Ensure app-root allows scrolling */
+app-root {
+    display: block;
+    min-height: 100vh;
+}
+
+/* Prevent horizontal scroll on tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Responsive typography base */
+html {
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+}

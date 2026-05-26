@@ -61,8 +61,8 @@ export class Order implements OnInit, OnDestroy {
   isLoggedInNow = false;
 
   paymentMethods = [
-    { value: PaymentMethods.Online, labelKey: 'ORDER_FORM.CREDIT_CARD' },
-    { value: PaymentMethods.COD, labelKey: 'ORDER_FORM.CASH_ON_DELIVERY' },
+    { value: PaymentMethods.Online, labelKey: 'ENUMS.PAYMENT_METHODS.ONLINE' },
+    { value: PaymentMethods.COD, labelKey: 'ENUMS.PAYMENT_METHODS.COD' },
   ];
 
   order: IOrder = {

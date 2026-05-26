@@ -149,28 +149,30 @@
           <div style="color: #414040" class="pb-4 leading-relaxed text-center">
             <img src="{{currentImage}}" [attr.alt]="product | localizedName"
               class="w-32 h-32 object-cover rounded mb-4" />
-            <table class="w-full text-sm border border-black rounded mt-2">
-              <thead class="bg-black text-center">
-                <tr>
-                  <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.SIZE_COL' | translate }}</th>
-                  <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.WIDTH_COL' | translate }}</th>
-                  <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.LENGTH_COL' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let size of product?.productSizes" class="border-t hover:bg-gray-50">
-                  <td style="color: #414040" class="px-3 py-2">
-                    {{ size.size }}
-                  </td>
-                  <td style="color: #414040" class="px-3 py-2">
-                    {{ size.width }}
-                  </td>
-                  <td style="color: #414040" class="px-3 py-2">
-                    {{ size.height }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="overflow-x-auto -webkit-overflow-scrolling: touch">
+              <table class="w-full text-sm border border-black rounded mt-2 min-w-[400px]">
+                <thead class="bg-black text-center">
+                  <tr>
+                    <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.SIZE_COL' | translate }}</th>
+                    <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.WIDTH_COL' | translate }}</th>
+                    <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.LENGTH_COL' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let size of product?.productSizes" class="border-t hover:bg-gray-50">
+                    <td style="color: #414040" class="px-3 py-2">
+                      {{ size.size }}
+                    </td>
+                    <td style="color: #414040" class="px-3 py-2">
+                      {{ size.width }}
+                    </td>
+                    <td style="color: #414040" class="px-3 py-2">
+                      {{ size.height }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </details>
       </div>

@@ -1,0 +1,14 @@
+<section class="explore-styles-section">
+  <h2 class="explore-styles-title">{{ 'HOME.EXPLORE_MORE_STYLES' | translate }}</h2>
+
+  <div class="explore-styles-grid">
+    @for (category of categories; track category.id) {
+    <a [routerLink]="['/allProducts']" [queryParams]="{ categoryId: category.id }" class="explore-style-card">
+      <img [src]="getCategoryImageUrl(category)" [alt]="getCategoryName(category)" class="explore-style-image" />
+      <div class="explore-style-label">
+        {{ category.nameEn || category.name }}
+      </div>
+    </a>
+    }
+  </div>
+</section>

@@ -171,3 +171,14 @@ input[type="radio"]:disabled {
         --radio-border: #444;
     }
 }
+
+/* Responsive font size for small screens */
+@media (max-width: 768px) {
+    .price-values {
+        font-size: 0.75rem;
+    }
+
+    .filter-label {
+        font-size: 0.75rem;
+    }
+}

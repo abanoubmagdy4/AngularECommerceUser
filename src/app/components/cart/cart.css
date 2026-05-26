@@ -1,0 +1,10 @@
+/* Cart Sidebar positioning with RTL support */
+[dir="rtl"] .cart-sidebar {
+    right: auto;
+    left: 0;
+}
+
+[dir="ltr"] .cart-sidebar {
+    left: auto;
+    right: 0;
+}

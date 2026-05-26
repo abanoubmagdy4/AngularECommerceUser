@@ -33,31 +33,47 @@ export const routes: Routes = [
         path: 'allProducts',
         loadComponent: () =>
           import('./components/all-products/all-products').then(
-            (m) => m.AllProducts
+            (m) => m.AllProducts,
           ),
         title: 'All Products',
+      },
+      {
+        path: 'discount-products',
+        loadComponent: () =>
+          import('./components/discount-Products/discount-Products').then(
+            (m) => m.DiscountProductsComponent,
+          ),
+        title: 'Discount Products',
+      },
+      {
+        path: 'new-arrival-products',
+        loadComponent: () =>
+          import('./components/new-arrival-products/new-arrival-products').then(
+            (m) => m.NewArrivalProductsComponent,
+          ),
+        title: 'New Arrival Products',
       },
       {
         path: 'product-details/:id',
         loadComponent: () =>
           import('./components/product-details/product-details').then(
-            (m) => m.ProductDetails
+            (m) => m.ProductDetails,
           ),
         title: 'Product Details',
       },
       {
         path: 'search-results',
         loadComponent: () =>
-          import(
-            './components/search-results/search-results/search-results'
-          ).then((m) => m.SearchResults),
+          import('./components/search-results/search-results/search-results').then(
+            (m) => m.SearchResults,
+          ),
         title: 'Search Results',
       },
       {
         path: 'profile',
         loadComponent: () =>
           import('./components/profile/profile').then(
-            (m) => m.ProfileComponent
+            (m) => m.ProfileComponent,
           ),
         canActivate: [authGuard],
       },
@@ -65,7 +81,7 @@ export const routes: Routes = [
         path: 'previous-orders',
         loadComponent: () =>
           import('./components/previous-orders/previous-orders').then(
-            (m) => m.PreviousOrders
+            (m) => m.PreviousOrders,
           ),
         canActivate: [authGuard],
         title: 'Previous Orders',

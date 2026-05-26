@@ -72,7 +72,8 @@
     "BESTSELLERS": "الأكثر مبيعاً",
     "NEW_ARRIVALS": "وصل حديثاً",
     "NO_PRODUCTS": "لا توجد منتجات.",
-    "SLIDE": "شريحة"
+    "SLIDE": "شريحة",
+    "EXPLORE_MORE_STYLES": "استكشف المزيد من التصنيفات"
   },
   "NEW_ARRIVAL": {
     "TITLE": "وصل حديثاً",
@@ -467,5 +468,28 @@
     "MIN_LENGTH": "الحد الأدنى {{min}} أحرف.",
     "INVALID_PHONE": "الرجاء إدخال رقم هاتف مصري صحيح.",
     "INVALID_VALUE": "الرجاء إدخال قيمة صحيحة."
+  },
+  "ENUMS": {
+    "ORDER_STATUS": {
+      "CREATED": "تم الإنشاء",
+      "AWAITING_PAYMENT": "في انتظار الدفع",
+      "PROCESSING": "قيد المعالجة",
+      "CANCELLED": "ملغي",
+      "RETURNED": "مُرتجع"
+    },
+    "PAYMENT_METHODS": {
+      "ONLINE": "أونلاين",
+      "COD": "الدفع عند الاستلام",
+      "CARD": "بطاقة ائتمان",
+      "WALLET": "محفظة إلكترونية"
+    },
+    "SHIPPING_STATUS": {
+      "NOT_APPLICABLE": "غير قابل للتطبيق",
+      "NOT_SHIPPED": "لم يتم الشحن",
+      "READY_TO_SHIP": "جاهز للشحن",
+      "SHIPPED": "تم الشحن",
+      "OUT_FOR_DELIVERY": "في الطريق للتوصيل",
+      "DELIVERED": "تم التوصيل"
+    }
   }
 }
