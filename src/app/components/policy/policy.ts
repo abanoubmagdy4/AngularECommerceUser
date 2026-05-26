@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-policy',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
   templateUrl: './policy.html',
-  styleUrl: './policy.css'
+  styleUrl: './policy.css',
 })
-export class Policy {
-
-}
+export class Policy {}

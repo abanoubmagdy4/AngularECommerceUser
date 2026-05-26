@@ -18,11 +18,14 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { LanguageService } from '../../shared/services/language/language.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LocalizedNamePipe } from '../../shared/pipes/localized-name.pipe';
 
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule, LocalizedNamePipe],
   templateUrl: './product-details.html',
   styleUrls: ['./product-details.css'],
 })
@@ -44,7 +47,9 @@ export class ProductDetails implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private http: HttpClient,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private languageService: LanguageService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -55,10 +60,11 @@ export class ProductDetails implements OnInit {
           this.product = res;
           this.selectedSize = res.productSizes?.[0]?.size || null;
           this.isLoading = false;
-          console.log('Product details:', this.product.description);
-          this.description = this.sanitizer.bypassSecurityTrustHtml(
-            this.product.description
+          const descHtml = this.languageService.getLocalizedDescription(
+            this.product,
           );
+          console.log('Product details:', descHtml);
+          this.description = this.sanitizer.bypassSecurityTrustHtml(descHtml);
         },
         error: (err) => {
           this.isLoading = false;
@@ -143,8 +149,8 @@ export class ProductDetails implements OnInit {
     } else {
       Swal.fire({
         icon: 'error',
-        title: 'Insufficient quantity available',
-        text: 'The requested quantity exceeds the available stock.',
+        title: this.translate.instant('ERRORS.INSUFFICIENT_STOCK'),
+        text: this.translate.instant('ERRORS.STOCK_EXCEEDED'),
         showConfirmButton: false,
         timer: 2500,
       });
@@ -160,7 +166,7 @@ export class ProductDetails implements OnInit {
   showAlert(msg: string) {
     Swal.fire({
       icon: 'success',
-      title: 'Success',
+      title: this.translate.instant('COMMON.SUCCESS'),
       text: msg,
       toast: true,
       position: 'bottom-right',
@@ -179,14 +185,14 @@ export class ProductDetails implements OnInit {
   addToLocalStorageCart(
     product: IProduct,
     selectedSize: string,
-    quantity: number
+    quantity: number,
   ) {
     const sizeObj = product.productSizes?.find((s) => s.size === selectedSize);
     if (!sizeObj) {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Selected size is not valid',
+        title: this.translate.instant('COMMON.ERROR'),
+        text: this.translate.instant('ERRORS.INVALID_SIZE'),
         toast: true,
         position: 'bottom-right',
         showConfirmButton: false,
@@ -219,7 +225,7 @@ export class ProductDetails implements OnInit {
     const existingCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
     const foundItem = existingCart.find(
       (item: any) =>
-        item.productId === product.id && item.productSizeId === sizeObj.id
+        item.productId === product.id && item.productSizeId === sizeObj.id,
     );
 
     if (foundItem) {
@@ -227,7 +233,7 @@ export class ProductDetails implements OnInit {
       if (totalQuantity > sizeObj.stockQuantity) {
         Swal.fire({
           icon: 'warning',
-          title: 'Quantity limit exceeded',
+          title: this.translate.instant('ERRORS.QUANTITY_INVALID'),
           html: `<b>Requested: ${totalQuantity}, Available: ${sizeObj.stockQuantity}</b>`,
           showConfirmButton: false,
           timer: 2500,
@@ -236,13 +242,13 @@ export class ProductDetails implements OnInit {
       }
 
       foundItem.quantity = totalQuantity;
-      this.showAlert('✅ Product quantity updated in cart');
+      this.showAlert(this.translate.instant('SUCCESS.ADDED_TO_CART'));
     } else {
       if (quantity > sizeObj.stockQuantity) {
         Swal.fire({
           icon: 'error',
-          title: 'Insufficient quantity available',
-          text: 'The requested quantity exceeds the available stock.',
+          title: this.translate.instant('ERRORS.INSUFFICIENT_STOCK'),
+          text: this.translate.instant('ERRORS.STOCK_EXCEEDED'),
           showConfirmButton: false,
           timer: 2500,
         });
@@ -251,7 +257,7 @@ export class ProductDetails implements OnInit {
       }
 
       existingCart.push(cartItem);
-      this.showAlert('✅ Product added to cart successfully');
+      this.showAlert(this.translate.instant('SUCCESS.ADDED_TO_CART'));
       this.cartItemService.getCurrentUserCart().subscribe((cart) => {
         const count = cart?.cartItems?.length || 0;
         this.cartItemService.updateCartCount(count);
@@ -266,8 +272,8 @@ export class ProductDetails implements OnInit {
     if (!this.product || !this.selectedSize) {
       Swal.fire({
         icon: 'warning',
-        title: 'Please select a size first.',
-        confirmButtonText: 'OK',
+        title: this.translate.instant('ERRORS.SIZE_REQUIRED'),
+        confirmButtonText: this.translate.instant('COMMON.OK'),
       });
       return;
     }
@@ -277,7 +283,7 @@ export class ProductDetails implements OnInit {
         .addToCart(this.product!, this.selectedSize!, this.quantity)
         .subscribe({
           next: () => {
-            this.showAlert('✅ Product added to cart');
+            this.showAlert(this.translate.instant('SUCCESS.ADDED_TO_CART'));
             this.cartItemService.getCurrentUserCart().subscribe((cart) => {
               const count = cart?.cartItems?.length || 0;
               this.cartItemService.updateCartCount(count);
@@ -286,8 +292,10 @@ export class ProductDetails implements OnInit {
           error: (err) =>
             Swal.fire({
               icon: 'error',
-              title: 'Error',
-              text: err?.message || 'Failed to add product to cart.',
+              title: this.translate.instant('COMMON.ERROR'),
+              text:
+                err?.message ||
+                this.translate.instant('ERRORS.CART_ADD_FAILED'),
               showConfirmButton: false,
               timer: 2500,
             }),
@@ -296,7 +304,7 @@ export class ProductDetails implements OnInit {
       this.addToLocalStorageCart(
         this.product!,
         this.selectedSize!,
-        this.quantity
+        this.quantity,
       );
     }
   }
@@ -322,20 +330,20 @@ export class ProductDetails implements OnInit {
     if (!this.product || !this.selectedSize) {
       Swal.fire({
         icon: 'warning',
-        title: 'Please select a size first.',
-        confirmButtonText: 'OK',
+        title: this.translate.instant('ERRORS.SIZE_REQUIRED'),
+        confirmButtonText: this.translate.instant('COMMON.OK'),
       });
       return;
     }
 
     const sizeObj = this.product.productSizes?.find(
-      (s) => s.size === this.selectedSize
+      (s) => s.size === this.selectedSize,
     );
 
     if (!sizeObj) {
       Swal.fire({
         icon: 'error',
-        title: 'Selected size is not valid.',
+        title: this.translate.instant('ERRORS.INVALID_SIZE'),
       });
       return;
     }
@@ -344,7 +352,7 @@ export class ProductDetails implements OnInit {
       productId: this.product.id,
       productSizeId: sizeObj.id,
       productName: this.product.name,
-      productSizeName: sizeObj.size,
+      productSizeNameEn: sizeObj.size,
       productImageUrl: this.product.productImagesPaths?.[0]
         ? environment.baseServerUrl +
           this.product.productImagesPaths[0].imagePath

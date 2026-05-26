@@ -2,30 +2,20 @@
 
   <!-- Slides container -->
   <div #slidesContainer class="flex h-full w-full">
-    <img
-      *ngFor="let image of images"
-      [src]="isMobile ? image.mobile : image.desktop"
-      class="w-full h-full object-cover flex-shrink-0"
-      alt="Slide image"
-    />
+    <img *ngFor="let image of images; let i = index" [src]="isMobile ? image.mobile : image.desktop"
+      class="w-full h-full object-cover flex-shrink-0" [attr.alt]="'HOME.SLIDE' | translate" />
   </div>
 
   <!-- "Shop Now" -->
-  <a
-    [routerLink]="['/allProducts']"
-    class="shop-now-btn absolute bottom-20 text-3xl left-1/2 -translate-x-1/2 text-white font-semibold hover:scale-110 transition-transform"
-  >
-    SHOP NOW
+  <a [routerLink]="['/allProducts']"
+    class="shop-now-btn absolute bottom-20 text-3xl left-1/2 -translate-x-1/2 text-white font-semibold hover:scale-110 transition-transform">
+    {{ 'HOME.SHOP_NOW' | translate }}
   </a>
 
   <!-- Dots -->
   <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
-   <span
-  *ngFor="let image of images; let i = index"
-  (click)="goToSlide(i)"
-  [class.active]="currentSlide === i"
-  class="dot"
-></span>
+    <span *ngFor="let image of images; let i = index" (click)="goToSlide(i)" [class.active]="currentSlide === i"
+      class="dot"></span>
 
   </div>
 </section>

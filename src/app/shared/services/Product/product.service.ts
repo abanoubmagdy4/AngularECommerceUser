@@ -23,7 +23,9 @@ export class ProductService {
     categoryId?: number,
     minPrice?: number,
     maxPrice?: number,
-    isNewArrival?: boolean
+    isNewArrival?: boolean,
+    sortBy?: string,
+    sortOrder?: string,
   ): Observable<PaginatedResult<IProduct[]>> {
     let params = new HttpParams()
       .set('pageIndex', page)
@@ -31,13 +33,17 @@ export class ProductService {
       .set('SearchTerm', search || '');
 
     if (categoryId != null) params = params.set('CategoryId', categoryId);
-    if (minPrice != null) params = params.set('MinPrice', minPrice);
-    if (maxPrice != null) params = params.set('MaxPrice', maxPrice);
+    if (minPrice != null && minPrice !== undefined)
+      params = params.set('MinPrice', minPrice);
+    if (maxPrice != null && maxPrice !== undefined)
+      params = params.set('MaxPrice', maxPrice);
     if (isNewArrival != null) params = params.set('isNewArrival', isNewArrival);
+    if (sortBy) params = params.set('SortBy', sortBy);
+    if (sortOrder) params = params.set('SortOrder', sortOrder);
 
     return this._httpClient.get<PaginatedResult<IProduct[]>>(
       `${environment.urlPath}Products/Custpaginated`,
-      { params }
+      { params },
     );
   }
 }

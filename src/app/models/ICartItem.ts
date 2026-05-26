@@ -8,5 +8,6 @@ export interface ICartItem {
   totalPriceForOneItemType: number;
   productName?: string;
   productImageUrl?: string;
-  productSizeName?: string;
+  productSizeNameEn?: string;
+  productSizeNameAr?: string;
 }

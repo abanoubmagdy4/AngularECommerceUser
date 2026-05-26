@@ -5,12 +5,26 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Pagination } from '../pagination/pagination';
 import { RouterModule } from '@angular/router';
 import { RealTimeService } from '../../shared/services/RealTime/real-time-service';
-import { env } from 'node:process';
 import { environment } from '../../../environments/environment';
+import { TranslateModule } from '@ngx-translate/core';
+import { LocalizedNamePipe } from '../../shared/pipes';
+import {
+  ProductFilter,
+  ProductFilters,
+} from '../product-filter/product-filte/product-filter';
+import { LanguageService } from '../../shared/services/language/language.service';
 
 @Component({
   selector: 'app-all-products',
-  imports: [CurrencyPipe, Pagination, RouterModule, CommonModule],
+  imports: [
+    CurrencyPipe,
+    Pagination,
+    RouterModule,
+    CommonModule,
+    TranslateModule,
+    LocalizedNamePipe,
+    ProductFilter,
+  ],
   templateUrl: './all-products.html',
   styleUrl: './all-products.css',
 })
@@ -19,9 +33,18 @@ export class AllProducts implements OnInit {
   currentPageIndex = 1;
   totalPages = 1;
 
+  private activeFilters: ProductFilters = {
+    search: '',
+    categoryId: undefined,
+    minPrice: 0,
+    maxPrice: 10000,
+    sortBy: 'default',
+  };
+
   constructor(
     private _ProductService: ProductService,
-    private realTimeService: RealTimeService
+    private realTimeService: RealTimeService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
@@ -37,19 +60,64 @@ export class AllProducts implements OnInit {
       }
     });
   }
-  applyFilters(filters: any) {
+  applyFilters(filters: ProductFilters) {
+    this.activeFilters = filters;
+    this.currentPageIndex = 1;
+    console.log('Applying filters:', filters);
     this._ProductService
       .getPaginatedProducts(
         1,
         12,
-        filters.search, // search term فيه subcategory لو اتحدد
-        filters.categoryId, // الكاتيجوري ID عادي
+        filters.search,
+        filters.categoryId,
         filters.minPrice,
-        filters.maxPrice
+        filters.maxPrice,
+        undefined,
+        filters.sortBy,
       )
       .subscribe((res) => {
-        this.filteredProducts = res.items;
+        console.log('Filtered products received:', res);
+        this.filteredProducts = this.sortProducts(res.items, filters.sortBy);
+        this.totalPages = res.totalPages;
       });
+  }
+
+  private sortProducts(products: IProduct[], sortBy: string): IProduct[] {
+    const isAr = this.languageService.isArabic();
+    const copy = [...products];
+    switch (sortBy) {
+      case 'priceAsc':
+        return copy.sort((a, b) => a.priceAfterDiscount - b.priceAfterDiscount);
+      case 'priceDesc':
+        return copy.sort((a, b) => b.priceAfterDiscount - a.priceAfterDiscount);
+      case 'nameAsc':
+        return copy.sort((a, b) => {
+          const na = isAr
+            ? a.nameAr || a.nameEn || ''
+            : a.nameEn || a.nameAr || '';
+          const nb = isAr
+            ? b.nameAr || b.nameEn || ''
+            : b.nameEn || b.nameAr || '';
+          return na.localeCompare(nb, isAr ? 'ar' : 'en');
+        });
+      case 'nameDesc':
+        return copy.sort((a, b) => {
+          const na = isAr
+            ? a.nameAr || a.nameEn || ''
+            : a.nameEn || a.nameAr || '';
+          const nb = isAr
+            ? b.nameAr || b.nameEn || ''
+            : b.nameEn || b.nameAr || '';
+          return nb.localeCompare(na, isAr ? 'ar' : 'en');
+        });
+      case 'newest':
+        return copy.sort(
+          (a, b) =>
+            new Date(b.PublishAt).getTime() - new Date(a.PublishAt).getTime(),
+        );
+      default:
+        return copy;
+    }
   }
 
   /**
@@ -124,5 +192,12 @@ export class AllProducts implements OnInit {
     if (!images[index]) return `${baseUrl}${images[0].imagePath}`;
 
     return `${baseUrl}${images[index].imagePath}`;
+  }
+
+  calculateDiscountPercentage(product: IProduct): number {
+    if (!product.price || product.price <= 0) return 0;
+    const discount =
+      ((product.price - product.priceAfterDiscount) / product.price) * 100;
+    return Math.round(discount);
   }
 }

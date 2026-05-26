@@ -16,12 +16,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { Login } from '../login/login';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CartItemService } from '../../shared/services/cart/cart.service';
-import { platform } from 'os';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../shared/services/language/language.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatDialogModule, Cart], // ✅ أضف هنا
+  imports: [CommonModule, RouterLink, MatDialogModule, Cart, TranslateModule],
   templateUrl: './header.html',
   styleUrls: ['./header.css'],
 })
@@ -30,7 +31,7 @@ export class Header implements OnInit {
   isCartVisible = false;
   isProfileVisible = false;
   isMobileMenuVisible = false;
-  cartCount = 0; // عداد السلة
+  cartCount = 0; // Cart counter
 
   constructor(
     private cartservice: CartItemService,
@@ -39,8 +40,8 @@ export class Header implements OnInit {
     private authService: AuthService,
     private dialog: MatDialog,
     private eRef: ElementRef,
-
-    @Inject(PLATFORM_ID) private platformId: Object
+    public languageService: LanguageService,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.authService.isLoggedIn().subscribe((status) => {
       this.isLoggedIn = status;

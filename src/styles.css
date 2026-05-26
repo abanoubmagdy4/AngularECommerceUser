@@ -1,15 +1,13 @@
 @import "tailwindcss";
 
-@import url('~quill/dist/quill.snow.css');
-
 @font-face {
-  font-family: 'HelveticaCustom';
-  src: url('/assets/fonts/Helvetica/Helvetica-Bold.woff2') format('woff2'),
-       url('/assets/fonts/Helvetica/Helvetica-Bold.woff') format('woff'),
-       url('/assets/fonts/Helvetica/Helvetica-Bold.otf') format('opentype');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'HelveticaCustom';
+    src: url('/assets/fonts/Helvetica/Helvetica-Bold.woff2') format('woff2'),
+        url('/assets/fonts/Helvetica/Helvetica-Bold.woff') format('woff'),
+        url('/assets/fonts/Helvetica/Helvetica-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* تخلي خلفية الديالوج شفافة وتشيل الحافة */
@@ -27,22 +25,29 @@
 
 /* الخط الأساسي للشكل كله */
 body {
-  font-family: 'HelveticaCustom', Helvetica, Arial, sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 15px;
-  line-height: 150%;
-  margin: 0;
-  padding: 0;
-  color: #000;
-  text-transform: uppercase;
-  letter-spacing: -1px; /* ✨ قلل المسافات */
+    font-family: 'HelveticaCustom', Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 150%;
+    margin: 0;
+    padding: 0;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    /* ✨ قلل المسافات */
 }
 
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'HelveticaCustom', Helvetica, Arial, sans-serif !important;
-    letter-spacing: -1px; /* ✨ قلل المسافات */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'HelveticaCustom', Helvetica, Arial, sans-serif !important;
+    letter-spacing: -1px;
+    /* ✨ قلل المسافات */
 
 }
 
@@ -102,4 +107,87 @@ button {
 
 .product-description li {
     margin-bottom: 0.25rem;
+}
+
+/* =============================================
+   RTL / LTR Language Support
+   ============================================= */
+
+/* RTL specific styles */
+html[dir="rtl"] {
+    direction: rtl;
+    text-align: start;
+}
+
+html[dir="ltr"] {
+    direction: ltr;
+    text-align: start;
+}
+
+/* Arabic font support - Override for Arabic text */
+html[lang="ar"] body {
+    font-family: 'Noto Sans Arabic', 'HelveticaCustom', Helvetica, Arial, sans-serif;
+    letter-spacing: 0;
+}
+
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6 {
+    font-family: 'Noto Sans Arabic', 'HelveticaCustom', Helvetica, Arial, sans-serif !important;
+    letter-spacing: 0;
+}
+
+/* RTL specific utility overrides for Tailwind */
+html[dir="rtl"] .text-left {
+    text-align: right;
+}
+
+html[dir="rtl"] .text-right {
+    text-align: left;
+}
+
+html[dir="rtl"] .start-0 {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+}
+
+html[dir="rtl"] .end-0 {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+}
+
+html[dir="rtl"] .ms-1,
+html[dir="rtl"] .ms-2,
+html[dir="rtl"] .ms-4,
+html[dir="rtl"] .ms-6,
+html[dir="rtl"] .ms-8 {
+    margin-inline-start: 0;
+}
+
+html[dir="rtl"] .me-1,
+html[dir="rtl"] .me-2,
+html[dir="rtl"] .me-4,
+html[dir="rtl"] .me-6,
+html[dir="rtl"] .me-8 {
+    margin-inline-end: 0;
+}
+
+/* Flip icons for RTL where appropriate */
+html[dir="rtl"] .fa-arrow-right {
+    transform: scaleX(-1);
+}
+
+html[dir="rtl"] .fa-arrow-left {
+    transform: scaleX(-1);
+}
+
+html[dir="rtl"] .fa-chevron-right {
+    transform: scaleX(-1);
+}
+
+html[dir="rtl"] .fa-chevron-left {
+    transform: scaleX(-1);
 }

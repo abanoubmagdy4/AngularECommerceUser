@@ -1,55 +1,64 @@
-<h2 class="font-bold text-3xl text-center ms-4 mt-15">ALL PRODUCTS</h2>
+<h2 class="font-bold text-3xl text-center ms-4 mt-15">{{ 'COMMON.CATALOG' | translate }}</h2>
 
 <div class="flex flex-col lg:flex-row mt-5">
+  <!-- Filter Sidebar -->
+  <div class="lg:w-64 flex-shrink-0 px-4 lg:px-0">
+    <app-product-filter (filtersChanged)="applyFilters($event)"></app-product-filter>
+  </div>
+
   <!-- منتجات -->
-  <section
-    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 lg:px-8 mt-6 lg:mt-0 w-full"
-  >
+  <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 lg:px-8 mt-6 lg:mt-0 w-full">
     @for (prd of filteredProducts; track $index;) {
-    <section class="rounded-lg overflow-hidden flex flex-col hover:scale-110">
-      <a
-        [routerLink]="['/product-details', prd.id]"
-        class="flex flex-col items-center mb-4"
-      >
-        <div class="relative h-70 lg:h-100 w-full overflow-hidden group">
+    <section
+      class="product-card rounded-lg overflow-hidden flex flex-col bg-white shadow-sm hover:shadow-md transition-all duration-300">
+      <a [routerLink]="['/product-details', prd.id]" class="flex flex-col h-full">
+        <div class="relative h-64 sm:h-72 lg:h-80 w-full overflow-hidden group bg-gray-100">
+          <!-- Sale Badge -->
+          @if(calculateDiscountPercentage(prd) > 0) {
+          <div class="absolute top-3 left-3 z-10">
+            <div
+              class="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              -{{calculateDiscountPercentage(prd)}}%
+            </div>
+          </div>
+          }
+
           <!-- الصورة الأساسية -->
-          <img
-            [src]="getImageUrl(prd, 0)"
-            [alt]="prd.name"
-            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"
-          />
+          <img [src]="getImageUrl(prd, 0)" [attr.alt]="prd | localizedName"
+            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0" />
 
           <!-- الصورة الثانية تظهر مع الهوفر -->
-          <img
-            [src]="getImageUrl(prd, 1)"
-            [alt]="prd.name + ' alt'"
-            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"
-          />
+          <img [src]="getImageUrl(prd, 1)" [attr.alt]="(prd | localizedName) + ' alt'"
+            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
         </div>
 
-        <h3 class="mt-1 text-lg font-bold text-black sm:text-xl">
-          {{prd.name}}
-        </h3>
-        <div>
-          @if(prd.discountPercentage > 0) {
-          <p style="color: #757575" class="mt-1 line-through">
-            {{prd.price | currency : 'EGP ' : 'code'}}
-          </p>
-          <p class="text-black font-bold mt-1">
-            {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
-          </p>
-          } @else {
-          <p class="mt-2 font-bold text-black">
-            {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
-          </p>
-          }
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="product-name text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 min-h-[2.5rem]">
+            {{ prd | localizedName }}
+          </h3>
+          <div class="mt-auto pt-3">
+            @if(calculateDiscountPercentage(prd) > 0) {
+            <div class="flex items-center gap-2">
+              <p class="text-gray-400 line-through text-xs">
+                {{prd.price | currency : 'EGP ' : 'code'}}
+              </p>
+              <p class="text-base font-bold text-gray-900">
+                {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+              </p>
+            </div>
+            } @else {
+            <p class="text-base font-bold text-gray-900">
+              {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+            </p>
+            }
+          </div>
         </div>
       </a>
     </section>
     } @if(filteredProducts.length === 0) {
     <section class="flex justify-center items-center mx-auto px-8">
       <h3 style="color: #757575" class="mt-4 text-lg font-bold sm:text-xl">
-        No Products.
+        {{ 'COMMON.NO_RESULTS' | translate }}
       </h3>
     </section>
     }
@@ -57,10 +66,6 @@
 </div>
 
 @if(filteredProducts.length !== 0) {
-<app-pagination
-  [currentPageIndex]="currentPageIndex"
-  [totalPages]="totalPages"
-  (pageChange)="changePage($event)"
->
+<app-pagination [currentPageIndex]="currentPageIndex" [totalPages]="totalPages" (pageChange)="changePage($event)">
 </app-pagination>
 }

@@ -43,7 +43,7 @@ export class CartItemService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     if (isPlatformBrowser(this.platformId)) {
       // تحقق من حالة تسجيل الدخول وتحديث العداد
@@ -211,7 +211,7 @@ export class CartItemService {
     return this.http.put(this.updateUrl, item, { headers }).pipe(
       tap(() => {
         this.getCurrentUserCart(true).subscribe(); // تحديث العداد بعد التعديل
-      })
+      }),
     );
   }
 
@@ -226,7 +226,7 @@ export class CartItemService {
       .pipe(
         tap(() => {
           this.getCurrentUserCart(true).subscribe(); // تحديث العداد بعد الحذف
-        })
+        }),
       );
   }
 
@@ -240,7 +240,7 @@ export class CartItemService {
     // تنسيق مسار الصورة قبل الإرسال للسيرفر
     const imageUrl = item.productImageUrl?.replace(
       `${environment.baseServerUrl}/`,
-      ''
+      '',
     );
 
     return this.http
@@ -256,24 +256,25 @@ export class CartItemService {
           totalPriceForOneItemType: item.totalPriceForOneItemType,
           productName: item.productName,
           productImageUrl: imageUrl,
-          productSizeName: item.productSizeName,
+          productSizeNameEn: item.productSizeNameEn,
+          productSizeNameAr: item.productSizeNameAr,
         },
-        { headers }
+        { headers },
       )
       .pipe(
         tap(() => {
           this.getCurrentUserCart(true).subscribe(); // تحديث العداد بعد الإضافة
-        })
+        }),
       );
   }
   addToCart(
     product: IProduct,
     selectedSize: string,
-    quantity: number
+    quantity: number,
   ): Observable<void> {
     return new Observable<void>((observer) => {
       const sizeObj = product.productSizes?.find(
-        (s) => s.size === selectedSize
+        (s) => s.size === selectedSize,
       );
       if (!sizeObj) {
         observer.error(new Error('Selected size not found in product'));
@@ -296,7 +297,8 @@ export class CartItemService {
           const cartItems = cart?.cartItems || [];
           const existingItem = cartItems.find(
             (item: any) =>
-              item.productId === product.id && item.productSizeId === sizeObj.id
+              item.productId === product.id &&
+              item.productSizeId === sizeObj.id,
           );
 
           const oldQuantity = existingItem?.quantity || 0;
@@ -305,8 +307,8 @@ export class CartItemService {
           if (totalQuantity > sizeObj.stockQuantity) {
             observer.error(
               new Error(
-                `الكمية المطلوبة (${totalQuantity}) أكثر من المتاح (${sizeObj.stockQuantity})`
-              )
+                `الكمية المطلوبة (${totalQuantity}) أكثر من المتاح (${sizeObj.stockQuantity})`,
+              ),
             );
             return;
           }
@@ -335,7 +337,7 @@ export class CartItemService {
               productImageUrl: (
                 product.productImagesPaths?.[0]?.imagePath || ''
               ).replace(`${environment.baseServerUrl}/`, ''),
-              productSizeName: selectedSize,
+              productSizeNameEn: selectedSize,
             };
 
             this.http.post(this.apiUrl, payload, { headers }).subscribe({

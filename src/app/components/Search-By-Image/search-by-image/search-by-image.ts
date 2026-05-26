@@ -5,10 +5,11 @@ import { Router } from '@angular/router';
 import { IAIProductSearchResult } from '../../../models/iaiproduct-search-result';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-search-by-image',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './search-by-image.html',
   styleUrl: './search-by-image.css',
 })
@@ -21,7 +22,7 @@ export class SearchByImage {
   promptText: string = '';
   constructor(
     private imageSearchService: ImageSearch,
-    private router: Router
+    private router: Router,
   ) {}
   handleFileSelect(event: Event) {
     const input = event.target as HTMLInputElement;

@@ -13,7 +13,10 @@ export class CartItemService {
   private apiUrl = `${environment.baseServerUrl}/api/CartItem`;
   private cartUrl = `${environment.baseServerUrl}/api/Cart`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+  ) {}
 
   /**
    * إضافة منتج للكارت
@@ -21,11 +24,11 @@ export class CartItemService {
   addToCart(
     product: IProduct,
     selectedSize: string,
-    quantity: number
+    quantity: number,
   ): Observable<void> {
     return new Observable<void>((observer) => {
       const sizeObj = product.productSizes?.find(
-        (s) => s.size === selectedSize
+        (s) => s.size === selectedSize,
       );
 
       if (!sizeObj) {
@@ -45,7 +48,8 @@ export class CartItemService {
 
           const existingItem = cartItems.find(
             (item: any) =>
-              item.productId === product.id && item.productSizeId === sizeObj.id
+              item.productId === product.id &&
+              item.productSizeId === sizeObj.id,
           );
 
           const oldQuantity = existingItem?.quantity || 0;
@@ -54,8 +58,8 @@ export class CartItemService {
           if (totalQuantity > sizeObj.stockQuantity) {
             observer.error(
               new Error(
-                `الكمية المطلوبة (${totalQuantity}) أكثر من المتاح (${sizeObj.stockQuantity})`
-              )
+                `الكمية المطلوبة (${totalQuantity}) أكثر من المتاح (${sizeObj.stockQuantity})`,
+              ),
             );
             return;
           }
@@ -73,7 +77,7 @@ export class CartItemService {
             // خصائص اتضافت في الـ DTO
             productName: product.name,
             productImageUrl: product.productImagesPaths?.[0]?.imagePath ?? '',
-            productSizeName: selectedSize,
+            productSizeNameEn: selectedSize,
           };
 
           this.http.post(this.apiUrl, payload, { headers }).subscribe({

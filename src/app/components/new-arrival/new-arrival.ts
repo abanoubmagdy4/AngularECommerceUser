@@ -6,12 +6,21 @@ import { Pagination } from '../pagination/pagination';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { RealTimeService } from '../../shared/services/RealTime/real-time-service';
+import { TranslateModule } from '@ngx-translate/core';
+import { LocalizedNamePipe } from '../../shared/pipes/localized-name.pipe';
 
 @Component({
   selector: 'app-new-arrival',
   templateUrl: './new-arrival.html',
   styleUrls: ['./new-arrival.css'],
-  imports: [CurrencyPipe, Pagination, CommonModule, RouterLink],
+  imports: [
+    CurrencyPipe,
+    Pagination,
+    CommonModule,
+    RouterLink,
+    TranslateModule,
+    LocalizedNamePipe,
+  ],
 })
 export class NewArrival implements OnInit {
   filteredProducts: IProduct[] = [] as IProduct[];
@@ -20,7 +29,7 @@ export class NewArrival implements OnInit {
 
   constructor(
     private _NewArrivalsService: NewArrivalsService,
-    private realTimeService: RealTimeService
+    private realTimeService: RealTimeService,
   ) {}
 
   ngOnInit() {
@@ -44,8 +53,7 @@ export class NewArrival implements OnInit {
         this.currentPageIndex = response.pageIndex;
         this.totalPages = response.totalPages;
       },
-      error: (err) => {
-      },
+      error: (err) => {},
     });
   }
   changePage(page: number): void {
@@ -73,5 +81,12 @@ export class NewArrival implements OnInit {
     return product.productSizes && product.productSizes.length
       ? product.productSizes.map((s) => s.size.charAt(0)).join(', ')
       : 'N/A';
+  }
+
+  calculateDiscountPercentage(product: IProduct): number {
+    if (!product.price || product.price <= 0) return 0;
+    const discount =
+      ((product.price - product.priceAfterDiscount) / product.price) * 100;
+    return Math.round(discount);
   }
 }

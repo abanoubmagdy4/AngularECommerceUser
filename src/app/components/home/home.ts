@@ -1,13 +1,20 @@
-import { Component, Inject, OnInit, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PLATFORM_ID } from '@angular/core';
 import { NewArrival } from '../new-arrival/new-arrival';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, NewArrival],
+  imports: [CommonModule, RouterModule, NewArrival, TranslateModule],
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
 })
@@ -51,12 +58,12 @@ export class Home implements OnInit {
     this.setPositionByIndex();
   }
 
-setPositionByIndex() {
-  if (this.slidesContainer) {
-    const slideWidth = this.slidesContainer.nativeElement.offsetWidth; // عرض الكونتينر كله
-    this.slidesContainer.nativeElement.style.transition = 'transform 0.7s ease-in-out';
-    this.slidesContainer.nativeElement.style.transform = `translateX(-${this.currentSlide * slideWidth}px)`;
+  setPositionByIndex() {
+    if (this.slidesContainer) {
+      const slideWidth = this.slidesContainer.nativeElement.offsetWidth; // عرض الكونتينر كله
+      this.slidesContainer.nativeElement.style.transition =
+        'transform 0.7s ease-in-out';
+      this.slidesContainer.nativeElement.style.transform = `translateX(-${this.currentSlide * slideWidth}px)`;
+    }
   }
-}
-
 }

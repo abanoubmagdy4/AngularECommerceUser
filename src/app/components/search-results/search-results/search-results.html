@@ -1,53 +1,74 @@
 <div class="p-4">
-  <h2
-    class="text-2xl font-bold text-center text-dark-600 dark:text-gray-300 mb-6"
-  >
-    Search Results
+  <h2 class="text-2xl font-bold text-center text-dark-600 dark:text-gray-300 mb-6">
+    {{ 'SEARCH_BY_IMAGE.RESULTS' | translate }}
   </h2>
 
-  <section
-    class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-8 mt-6"
-  >
+  <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 lg:px-8 mt-6">
     @for (res of results; track $index;) {
     <section
-      class="rounded-lg overflow-hidden flex flex-col"
-      data-aos="zoom-in"
-      data-aos-duration="500"
-      data-aos-offset="100"
-    >
-      <a
-        [routerLink]="['/product-details', res.product.productId]"
-        class="flex flex-col items-center mb-6"
-      >
-        <div class="relative h-96 w-full overflow-hidden group">
-          <img
-            [src]="getImageUrl(res.product.imgReference, 0)"
-            [alt]="res.product.name"
-            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"
-          />
-          <img
-            [src]="getImageUrl(res.product.imgReference, 1)"
-            [alt]="res.product.name + ' alt'"
-            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"
-          />
+      class="product-card rounded-lg overflow-hidden flex flex-col bg-white shadow-sm hover:shadow-md transition-all duration-300"
+      data-aos="zoom-in" data-aos-duration="500" data-aos-offset="100">
+      <a [routerLink]="['/product-details', res.product.productId]" class="flex flex-col h-full">
+        <div class="relative h-64 sm:h-72 lg:h-80 w-full overflow-hidden group bg-gray-100">
+          <!-- Sale Badge -->
+          @if(getProductDetails(res.product.productId)) {
+          @let product = getProductDetails(res.product.productId);
+          @if(product && calculateDiscountPercentage(product) > 0) {
+          <div class="absolute top-3 left-3 z-10">
+            <div
+              class="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              -{{calculateDiscountPercentage(product)}}%
+            </div>
+          </div>
+          }
+          }
+
+          <img [src]="getImageUrl(res.product.imgReference, 0)" [alt]="res.product.name"
+            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0" />
+          <img [src]="getImageUrl(res.product.imgReference, 1)" [alt]="res.product.name + ' alt'"
+            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
         </div>
 
-        <h3 class="mt-4 text-lg font-bold text-gray-900 sm:text-xl">
-          {{ res.product.name }}
-        </h3>
-      </a>
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="product-name text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 min-h-[2.5rem]">
+            {{ getLocalizedProductName(res.product) }}
+          </h3>
 
-      <!-- ✅ التحليل من الذكاء الاصطناعي -->
-      <div class="mt-2 px-2 text-sm text-gray-700 dark:text-gray-200">
-        {{ res.analysis }}
-      </div>
+          <!-- ✅ التحليل من الذكاء الاصطناعي -->
+          <div class="mt-2 text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+            {{ res.analysis }}
+          </div>
+
+          <div class="mt-auto pt-3">
+            @if(getProductDetails(res.product.productId)) {
+            @let product = getProductDetails(res.product.productId);
+            @if(product && calculateDiscountPercentage(product) > 0) {
+            <div class="flex items-center gap-2">
+              <p class="text-gray-400 line-through text-xs">
+                {{product.price | currency : 'EGP ' : 'code'}}
+              </p>
+              <p class="text-base font-bold text-gray-900">
+                {{product.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+              </p>
+            </div>
+            } @else if (product) {
+            <p class="text-base font-bold text-gray-900">
+              {{product.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+            </p>
+            }
+            } @else {
+            <div class="h-6 bg-gray-200 animate-pulse rounded"></div>
+            }
+          </div>
+        </div>
+      </a>
     </section>
     }
   </section>
 
   @if(results.length === 0) {
   <div class="text-center mt-12 text-gray-500 text-xl">
-    No products found for this image.
+    {{ 'SEARCH_BY_IMAGE.NO_RESULTS' | translate }}
   </div>
   }
 </div>

@@ -9,11 +9,12 @@ import {
 import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { ContactUsService } from '../services/contact-us/contct-us.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-contact-us',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, TranslateModule],
   templateUrl: './contact-us.html',
   styleUrl: './contact-us.css',
 })
@@ -37,7 +38,7 @@ export class ContactUs implements OnInit {
 
   constructor(
     private _contactUsService: ContactUsService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {}
 
   ngOnInit(): void {
@@ -110,12 +111,12 @@ export class ContactUs implements OnInit {
   getFieldError(fieldName: string): string {
     const field = this.contactForm.get(fieldName);
     if (!field?.errors) return '';
-    if (field.errors['required']) return 'This field is required.';
-    if (field.errors['email']) return 'Please enter a valid email address.';
+    if (field.errors['required']) return 'VALIDATION.REQUIRED';
+    if (field.errors['email']) return 'VALIDATION.INVALID_EMAIL';
     if (field.errors['minlength']) {
-      return `Minimum ${field.errors['minlength'].requiredLength} characters required.`;
+      return 'VALIDATION.MIN_LENGTH';
     }
-    if (field.errors['pattern']) return 'Please enter a valid value.';
+    if (field.errors['pattern']) return 'VALIDATION.INVALID_VALUE';
     return '';
   }
 }

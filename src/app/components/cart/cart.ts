@@ -19,12 +19,19 @@ import { Login } from '../login/login';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-cart',
   standalone: true,
   templateUrl: './cart.html',
   styleUrls: ['./cart.css'],
-  imports: [CommonModule, DecimalPipe, RouterModule, FormsModule], // <-- أضف RouterModule هنا
+  imports: [
+    CommonModule,
+    DecimalPipe,
+    RouterModule,
+    FormsModule,
+    TranslateModule,
+  ],
   encapsulation: ViewEncapsulation.None,
 })
 export class Cart implements OnInit {
@@ -33,21 +40,22 @@ export class Cart implements OnInit {
   cartItems: ICartItem[] = [];
   estimatedTotal = 0;
   isLoggedInNow = false;
-  cartCount = 0; // <-- نضيف عداد السلة هنا
+  cartCount = 0; // Cart counter
   constructor(
     private cartService: CartItemService,
-    private authService: AuthService, // ⬅️ نستخدمه بدل ما نعتمد على cartService.getToken()
+    private authService: AuthService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private productDetailsService: ProductDetailsService // ⬅️ ضفنا السيرفيس هنا
+    private productDetailsService: ProductDetailsService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
     this.cartService.cartCount$.subscribe((count) => {
-      this.cartCount = count; // <-- نحدث عداد السلة هنا
+      this.cartCount = count; // Update cart count
     });
-    const token = this.authService.getToken(); // ✅ استخدم AuthService مباشرة
+    const token = this.authService.getToken();
 
     if (token) {
       this.loadServerCart();
@@ -61,17 +69,17 @@ export class Cart implements OnInit {
       next: (res: any) => {
         const items = res?.cartItems ?? [];
         this.cartItems = items.map((item: any) => ({
-          id: item.id, // ✅ خد الآي دي هنا
+          id: item.id,
           productId: item.productId,
-          productName: item.productName ?? 'Unknown',
+          productName: item.productNameEn ?? item.productNameAr ?? 'Unknown',
           productImageUrl: item.productImageUrl,
-          productSizeName: item.productSizeName ?? '',
+          productSizeNameEn: item.productSizeNameEn ?? '',
+          productSizeNameAr: item.productSizeNameAr ?? '',
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           totalPriceForOneItemType: item.totalPriceForOneItemType,
         }));
         this.calculateTotal();
-        // العداد يتم تحديثه تلقائياً في CartItemService
       },
       error: (err) => {},
     });
@@ -83,7 +91,7 @@ export class Cart implements OnInit {
         const rawItems = JSON.parse(storedCart);
         this.cartItems = rawItems.map((item: any) => {
           return {
-            id: 0, // id مش موجود في local cart
+            id: 0, // id not available in local cart
             productId: item.productId,
             productSizeId: item.productSizeId,
             quantity: item.quantity,
@@ -91,20 +99,21 @@ export class Cart implements OnInit {
             totalPriceForOneItemType: item.totalPriceForOneItemType,
             productName: item.productName || item.name || 'Unknown',
             productImageUrl: item.productImageUrl || item.image || '',
-            productSizeName: item.productSizeName || '',
+            productSizeNameEn: item.productSizeNameEn || '',
+            productSizeNameAr: item.productSizeNameAr || '',
           } as ICartItem;
         });
 
         this.calculateTotal();
       } catch (e) {}
     }
-    this.cartService.updateCartCount(this.cartItems.length); // تحديث عداد السلة
+    this.cartService.updateCartCount(this.cartItems.length);
   }
 
   calculateTotal(): void {
     this.estimatedTotal = this.cartItems.reduce(
       (acc, item) => acc + item.totalPriceForOneItemType,
-      0
+      0,
     );
   }
 
@@ -112,37 +121,37 @@ export class Cart implements OnInit {
     const token = this.authService.getToken();
 
     if (token) {
-      // لو يوزر مسجل دخول
+      // Logged-in user
       item.quantity++;
       item.totalPriceForOneItemType = item.unitPrice * item.quantity;
 
       this.cartService.updateCartItemQuantity(item).subscribe({
         next: () => this.calculateTotal(),
         error: (err) => {
-          item.quantity--; // نرجّع الكمية القديمة
+          item.quantity--; // Revert quantity
 
           Swal.fire({
             icon: 'error',
-            title: 'Insufficient quantity available',
-            text: 'The requested quantity exceeds the available stock.',
+            title: this.translate.instant('CART.INSUFFICIENT_QTY_TITLE'),
+            text: this.translate.instant('CART.INSUFFICIENT_QTY_TEXT'),
             showConfirmButton: false,
             timer: 2500,
           });
         },
       });
     } else {
-      // Guest user 🧑‍🦲
+      // Guest user
       this.productDetailsService.getProductById(item.productId).subscribe({
         next: (res) => {
           const sizeObj = res.productSizes?.find(
-            (s) => +s.id === +item.productSizeId // نعمل casting للأمان
+            (s) => +s.id === +item.productSizeId, // Cast for safety
           );
 
           if (!sizeObj) {
             Swal.fire({
               icon: 'error',
-              title: 'Size not found',
-              text: 'The selected size does not exist anymore.',
+              title: this.translate.instant('CART.SIZE_NOT_FOUND_TITLE'),
+              text: this.translate.instant('CART.SIZE_NOT_FOUND_TEXT'),
               showConfirmButton: false,
               timer: 2500,
             });
@@ -158,8 +167,10 @@ export class Cart implements OnInit {
           } else {
             Swal.fire({
               icon: 'success',
-              title: 'Insufficient quantity available',
-              text: `Only ${availableStock} left in stock.`,
+              title: this.translate.instant('CART.INSUFFICIENT_QTY_TITLE'),
+              text: this.translate.instant('CART.ONLY_LEFT', {
+                count: availableStock,
+              }),
               toast: true,
               position: 'bottom-right',
               showConfirmButton: false,
@@ -177,8 +188,8 @@ export class Cart implements OnInit {
         error: (err) => {
           Swal.fire({
             icon: 'error',
-            title: 'Something went wrong',
-            text: 'Unable to verify available stock.',
+            title: this.translate.instant('CART.ERROR_TITLE'),
+            text: this.translate.instant('CART.ERROR_TEXT'),
           });
         },
       });
@@ -214,7 +225,7 @@ export class Cart implements OnInit {
       this.cartItems = this.cartItems.filter(
         (ci) =>
           ci.productId !== item.productId ||
-          ci.productSizeId !== item.productSizeId
+          ci.productSizeId !== item.productSizeId,
       );
       localStorage.setItem('guestCart', JSON.stringify(this.cartItems));
       this.calculateTotal();
@@ -226,7 +237,7 @@ export class Cart implements OnInit {
     const index = this.cartItems.findIndex(
       (ci) =>
         ci.productId === updatedItem.productId &&
-        ci.productSizeId === updatedItem.productSizeId
+        ci.productSizeId === updatedItem.productSizeId,
     );
 
     if (index !== -1) {
@@ -292,10 +303,9 @@ export class Cart implements OnInit {
   // }
 
   completeCheckout(): void {
-  const token = this.authService.getToken();
-  const isLoggedIn = !!token;
+    const token = this.authService.getToken();
+    const isLoggedIn = !!token;
 
-  this.router.navigate(['/order']);
-}
-
+    this.router.navigate(['/order']);
+  }
 }

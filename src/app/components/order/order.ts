@@ -23,6 +23,8 @@ import { OrderService } from '../services/Order/order.service';
 import { Login } from '../login/login';
 import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../shared/services/language/language.service';
 
 @Component({
   selector: 'app-order',
@@ -33,6 +35,7 @@ import Swal from 'sweetalert2';
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
+    TranslateModule,
   ],
   templateUrl: './order.html',
   styleUrl: './order.css',
@@ -41,7 +44,13 @@ export class Order implements OnInit, OnDestroy {
   addressSelectControl: any;
   addNewAddressControl: any;
   cartItems: ICartItem[] = [];
-  governorates: { id: number; name: string; shippingCost: number }[] = [];
+  governorates: {
+    id: number;
+    nameAr?: string;
+    nameEn?: string;
+    name?: string;
+    shippingCost: number;
+  }[] = [];
   shippingCost: number = 0;
   estimatedTotal: number = 0;
   private completedCheckout: boolean = false;
@@ -52,8 +61,8 @@ export class Order implements OnInit, OnDestroy {
   isLoggedInNow = false;
 
   paymentMethods = [
-    { value: PaymentMethods.Online, label: 'Credit Card Or Mobile Wallet' },
-    { value: PaymentMethods.COD, label: 'Cash on Delivery' },
+    { value: PaymentMethods.Online, labelKey: 'ORDER_FORM.CREDIT_CARD' },
+    { value: PaymentMethods.COD, labelKey: 'ORDER_FORM.CASH_ON_DELIVERY' },
   ];
 
   order: IOrder = {
@@ -83,7 +92,8 @@ export class Order implements OnInit, OnDestroy {
     private router: Router,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private languageService: LanguageService,
   ) {
     this.orderForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -148,7 +158,8 @@ export class Order implements OnInit, OnDestroy {
           productId: buyNowItem.productId,
           productSizeId: buyNowItem.productSizeId,
           productName: buyNowItem.productName,
-          productSizeName: buyNowItem.productSizeName ?? '',
+          productSizeNameEn: buyNowItem.productSizeNameEn ?? '',
+          productSizeNameAr: buyNowItem.productSizeNameAr ?? '',
           productImageUrl: buyNowItem.productImageUrl?.startsWith('http')
             ? buyNowItem.productImageUrl
             : buyNowItem.productImageUrl,
@@ -195,59 +206,58 @@ export class Order implements OnInit, OnDestroy {
     }
   }
 
-completeCheckout(): void {
-  // التحقق من صحة الفورم
-  if (this.orderForm.invalid) {
-    this.orderForm.markAllAsTouched();
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      html: '<small>Please complete all required fields correctly.</small>',
-      toast: true,
-      position: 'bottom-end',
-      background: '#651616',
-      color: '#fff',
-      showConfirmButton: false,
-      showCloseButton: true,
-      timer: 3500,
-      timerProgressBar: true,
-    });
-    return;
+  completeCheckout(): void {
+    // التحقق من صحة الفورم
+    if (this.orderForm.invalid) {
+      this.orderForm.markAllAsTouched();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        html: '<small>Please complete all required fields correctly.</small>',
+        toast: true,
+        position: 'bottom-end',
+        background: '#651616',
+        color: '#fff',
+        showConfirmButton: false,
+        showCloseButton: true,
+        timer: 3500,
+        timerProgressBar: true,
+      });
+      return;
+    }
+
+    // التحقق من وجود عناصر في السلة
+    if (this.cartItems.length === 0) {
+      alert('❌ Your cart is empty.');
+      return;
+    }
+
+    // تعيين بيانات العميل من الفورم مباشرة
+    this.order.customerId = 'guest'; // بدل ما تسيبها فاضية
+
+    this.order.customerInfo = {
+      email: this.orderForm.value.email,
+      firstName: this.orderForm.value.firstName,
+      lastName: this.orderForm.value.lastName,
+      phoneNumber: this.orderForm.value.phoneNumber,
+      dateOfBirth: new Date(), // غير مستخدم في الفورم، حطينا قيمة افتراضية
+    };
+
+    this.order.addressInfo = {
+      street: this.orderForm.value.street,
+      apartment: this.orderForm.value.apartment,
+      building: this.orderForm.value.building,
+      floor: this.orderForm.value.floor,
+      governrateShippingCostId: this.orderForm.value.governrateShippingCostId,
+      city: '', // ممكن تحددها حسب اختيار المحافظة
+      country: 'Egypt', // قيمة افتراضية
+    };
+
+    this.order.paymentMethod = this.orderForm.value.paymentMethod;
+
+    // تنفيذ الخطوة النهائية لإرسال الطلب
+    this.prepareAndSendOrder();
   }
-
-  // التحقق من وجود عناصر في السلة
-  if (this.cartItems.length === 0) {
-    alert('❌ Your cart is empty.');
-    return;
-  }
-
-  // تعيين بيانات العميل من الفورم مباشرة
-  this.order.customerId = 'guest'; // بدل ما تسيبها فاضية
-
-  this.order.customerInfo = {
-    email: this.orderForm.value.email,
-    firstName: this.orderForm.value.firstName,
-    lastName: this.orderForm.value.lastName,
-    phoneNumber: this.orderForm.value.phoneNumber,
-    dateOfBirth: new Date(), // غير مستخدم في الفورم، حطينا قيمة افتراضية
-  };
-
-  this.order.addressInfo = {
-    street: this.orderForm.value.street,
-    apartment: this.orderForm.value.apartment,
-    building: this.orderForm.value.building,
-    floor: this.orderForm.value.floor,
-    governrateShippingCostId: this.orderForm.value.governrateShippingCostId,
-    city: '', // ممكن تحددها حسب اختيار المحافظة
-    country: 'Egypt', // قيمة افتراضية
-  };
-
-  this.order.paymentMethod = this.orderForm.value.paymentMethod;
-
-  // تنفيذ الخطوة النهائية لإرسال الطلب
-  this.prepareAndSendOrder();
-}
-
 
   private prepareAndSendOrder(): void {
     this.order.orderItems = this.cartItems.map((item) => ({
@@ -269,7 +279,7 @@ completeCheckout(): void {
       const govId = this.order.addressInfo.governrateShippingCostId;
       const selectedGov = this.governorates.find((gov) => gov.id === govId);
       if (selectedGov) {
-        this.order.addressInfo.city = selectedGov.name;
+        this.order.addressInfo.city = this.getGovernorateName(selectedGov);
       }
     }
 
@@ -347,7 +357,7 @@ completeCheckout(): void {
   calculateTotal(): void {
     this.estimatedTotal = this.cartItems.reduce(
       (acc, item) => acc + item.totalPriceForOneItemType,
-      0
+      0,
     );
   }
 
@@ -360,7 +370,8 @@ completeCheckout(): void {
           productId: item.productId,
           productSizeId: item.productSizeId,
           productName: item.productName ?? 'Unknown',
-          productSizeName: item.productSizeName ?? '',
+          productSizeNameEn: item.productSizeNameEn ?? '',
+          productSizeNameAr: item.productSizeNameAr ?? '',
           productImageUrl: item.productImageUrl
             ? item.productImageUrl
             : '/assets/images/default.png',
@@ -385,7 +396,8 @@ completeCheckout(): void {
           productId: item.productId,
           productSizeId: item.productSizeId,
           productName: item.name ?? 'Unknown',
-          productSizeName: item.productSizeName ?? '',
+          productSizeNameEn: item.productSizeNameEn ?? '',
+          productSizeNameAr: item.productSizeNameAr ?? '',
           productImageUrl: item.image,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
@@ -412,7 +424,7 @@ completeCheckout(): void {
 
     if (selectedGov) {
       this.order.addressInfo.governrateShippingCostId = selectedGov.id;
-      this.order.addressInfo.city = selectedGov.name;
+      this.order.addressInfo.city = this.getGovernorateName(selectedGov);
       this.shippingCost = selectedGov.shippingCost;
     } else {
       this.order.addressInfo.city = '';
@@ -437,11 +449,11 @@ completeCheckout(): void {
   onAddressChange(): void {
     if (!this.useNewAddress && this.selectedAddressId) {
       const selected = this.savedAddresses.find(
-        (a) => a.id == this.selectedAddressId
+        (a) => a.id == this.selectedAddressId,
       );
       if (selected) {
         const selectedGovForCity = this.governorates.find(
-          (gov) => gov.id === selected.governrateShippingCostId
+          (gov) => gov.id === selected.governrateShippingCostId,
         );
         this.order.addressInfo = {
           id: selected.id,
@@ -463,7 +475,7 @@ completeCheckout(): void {
         });
         // Update shipping cost immediately based on governorate
         const selectedGov = this.governorates.find(
-          (gov) => gov.id === selected.governrateShippingCostId
+          (gov) => gov.id === selected.governrateShippingCostId,
         );
         if (selectedGov) {
           this.shippingCost = selectedGov.shippingCost;
@@ -510,5 +522,17 @@ completeCheckout(): void {
 
   trackByProductId(index: number, item: ICartItem): string {
     return item.productId + '-' + item.productSizeId;
+  }
+
+  /**
+   * Get localized governorate name based on current language
+   */
+  getGovernorateName(gov: {
+    id: number;
+    nameAr?: string;
+    nameEn?: string;
+    name?: string;
+  }): string {
+    return this.languageService.getLocalizedName(gov);
   }
 }

@@ -1,5 +1,11 @@
 // ✅ login.component.ts
-import { Component, Optional, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Optional,
+  Output,
+  EventEmitter,
+  inject,
+} from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { RouterStateService } from '../../shared/services/Router-State/router-state.service';
 import { LoginService } from '../../shared/services/login/login.service';
@@ -19,11 +25,18 @@ import { CookieService } from 'ngx-cookie-service';
 import { AuthService } from './../../shared/services/Auth/auth.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ICartItem } from '../../models/ICartItem';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    ReactiveFormsModule,
+    FormsModule,
+    TranslateModule,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -45,7 +58,8 @@ export class Login {
     @Optional() private dialogRef: MatDialogRef<Login>,
     private router: Router,
     private _authService: AuthService,
-    private _cartItemService: CartItemService
+    private _cartItemService: CartItemService,
+    private translate: TranslateService,
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.email, Validators.required]],
@@ -56,19 +70,19 @@ export class Login {
     const email = this.form.get('email')?.value;
 
     if (this.form.invalid) {
-         Swal.fire({
-           icon: 'error',
-           title: 'Error',
-           html: '<small>Please enter a valid email</small>',
-           toast: true,
-           position: 'bottom-end',
-           background: '#651616',
-           color: '#fff',
-           showConfirmButton: false,
-           showCloseButton: true,
-           timer: 3500,
-           timerProgressBar: true,
-         });
+      Swal.fire({
+        icon: 'error',
+        title: this.translate.instant('COMMON.ERROR'),
+        html: `<small>${this.translate.instant('LOGIN.ENTER_VALID_EMAIL')}</small>`,
+        toast: true,
+        position: 'bottom-end',
+        background: '#651616',
+        color: '#fff',
+        showConfirmButton: false,
+        showCloseButton: true,
+        timer: 3500,
+        timerProgressBar: true,
+      });
       return;
     }
 
@@ -78,7 +92,7 @@ export class Login {
         this.isVerificationPopupVisible = true;
       },
       error: (err) => {
-        alert('Failed to send verification code.');
+        alert(this.translate.instant('LOGIN.SEND_CODE_ERROR'));
       },
     });
   }
@@ -116,7 +130,7 @@ export class Login {
       next: () => {
         this.startCountdown();
       },
-      error: () => alert('Failed to resend code.'),
+      error: () => alert(this.translate.instant('LOGIN.RESEND_ERROR')),
     });
   }
 
@@ -128,8 +142,8 @@ export class Login {
       next: async (res) => {
         Swal.fire({
           icon: 'success',
-          title: 'Success',
-          text: ' You have been logged in successfully',
+          title: this.translate.instant('COMMON.SUCCESS'),
+          text: this.translate.instant('LOGIN.LOGIN_SUCCESS'),
           toast: true,
           position: 'bottom-right',
           showConfirmButton: false,
@@ -143,19 +157,19 @@ export class Login {
           },
         });
 
-        // ✅ خزّن التوكن
+        // Store token
         this._authService.setLogin(res.token);
 
-        // ✅ ترحيل الجست كارت دفعة واحدة
+        // Migrate guest cart
         const guestCartRaw = localStorage.getItem('guestCart');
         if (guestCartRaw) {
           try {
             const cart = await firstValueFrom(
-              this._cartItemService.getCurrentUserCart()
+              this._cartItemService.getCurrentUserCart(),
             );
             const cartId = cart?.id;
 
-            // ✅ جهّز الـ Payload النهائي بشكل صحيح
+            // Prepare final payload
             const guestCartItems: ICartItem[] = JSON.parse(guestCartRaw).map(
               (item: any) => ({
                 id: 0,
@@ -166,21 +180,22 @@ export class Login {
                 totalPriceForOneItemType: item.totalPriceForOneItemType,
                 productName: item.productName || item.name || 'Unknown',
                 productImageUrl: item.productImageUrl || item.image || '',
-                productSizeName: item.productSizeName || '',
-              })
+                productSizeNameEn: item.productSizeNameEn || '',
+                productSizeNameAr: item.productSizeNameAr || '',
+              }),
             );
             const result = await firstValueFrom(
               this._cartItemService.addToCartFromLocalStorageAfterLogin(
-                guestCartItems
-              )
+                guestCartItems,
+              ),
             );
-            localStorage.removeItem('guestCart'); // ✅ تنظيف الجست كارت بعد النجاح
+            localStorage.removeItem('guestCart'); // Clean guest cart after success
           } catch (err) {
-            localStorage.removeItem('guestCart'); // حتى لو حصل خطأ
+            localStorage.removeItem('guestCart'); // Clean even on error
           }
         }
 
-        // ✅ قفل الديالوج لو معمول Dialog
+        // Close dialog if using dialog
         if (this.dialogRef) {
           this.dialogRef.close({
             token: res.token,
@@ -188,17 +203,17 @@ export class Login {
           });
         }
 
-        // ✅ Emit للي فتح الكومبوننت
+        // Emit to parent component
         this.loginSuccess.emit();
 
-        // ✅ تنقل للصفحة الرئيسية
+        // Navigate to home
         this.isVerificationPopupVisible = false;
       },
       error: () => {
         Swal.fire({
           icon: 'error',
-          title: 'Invalid Code',
-          text: '❌ Please enter the correct verification code.',
+          title: this.translate.instant('LOGIN.INVALID_CODE_TITLE'),
+          text: this.translate.instant('LOGIN.INVALID_CODE_TEXT'),
         });
       },
     });

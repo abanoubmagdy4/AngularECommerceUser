@@ -7,11 +7,12 @@ import {
   DecimalPipe,
   CommonModule,
 } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-not-found',
   standalone: true,
-  imports: [RouterModule, CommonModule, DatePipe, DecimalPipe],
+  imports: [RouterModule, CommonModule, DatePipe, DecimalPipe, TranslateModule],
   templateUrl: './not-found.html',
   styleUrls: ['./not-found.css'],
 })

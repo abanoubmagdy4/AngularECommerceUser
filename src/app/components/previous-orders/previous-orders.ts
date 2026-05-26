@@ -7,11 +7,12 @@ import { PreviousOrder } from '../../shared/services/PreviousOrders/previous-ord
 import { IPreviousOrder } from '../../models/iprevious-order';
 import { environment } from '../../../environments/environment.development';
 import Swal from 'sweetalert2';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-previous-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './previous-orders.html',
   styleUrls: ['./previous-orders.css'],
 })
@@ -35,24 +36,33 @@ export class PreviousOrders implements OnInit {
     'Delivered',
   ];
 
-  filterOptions = ['All Orders', 'Pending', 'Completed', 'Rejected'];
-  selectedFilter = 'All Orders';
+  get filterOptions(): string[] {
+    return [
+      this.translate.instant('PREVIOUS_ORDERS.FILTER_ALL'),
+      this.translate.instant('PREVIOUS_ORDERS.FILTER_PENDING'),
+      this.translate.instant('PREVIOUS_ORDERS.FILTER_COMPLETED'),
+      this.translate.instant('PREVIOUS_ORDERS.FILTER_REJECTED'),
+    ];
+  }
+  selectedFilter = '';
   constructor(
     private refundOrderService: RefundOrderService,
-    private previousOrderService: PreviousOrder
+    private previousOrderService: PreviousOrder,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
+    this.selectedFilter = this.translate.instant('PREVIOUS_ORDERS.FILTER_ALL');
     this.previousOrderService.getPreviousOrders().subscribe({
       next: (response) => {
         this.orders = response;
       },
       error: () => {
         Swal.fire({
-          title: 'Error',
-          text: 'An error occurred while fetching previous orders.',
+          title: this.translate.instant('COMMON.ERROR'),
+          text: this.translate.instant('PREVIOUS_ORDERS.FETCH_ERROR'),
           icon: 'error',
-          confirmButtonText: 'OK',
+          confirmButtonText: this.translate.instant('COMMON.OK'),
         });
       },
     });
@@ -69,42 +79,54 @@ export class PreviousOrders implements OnInit {
   //     );
   //   }
   // }
-  // الدالة لتغيير الفلتر
+  // Change filter
   filterByStatus(status: string) {
     this.selectedFilter = status;
   }
 
-  // دالة ترجمة التسمية في الزر
+  // Translate status label
   getStepLabel(status: string): string {
-    switch (status) {
-      case 'Pending':
-        return 'Pending';
-      case 'Processing':
-        return 'Processing';
-      case 'ReadyToShip':
-        return ' ReadyToShip';
-      case 'Shipped':
-        return 'Shipped';
-      case 'OutForDelivery':
-        return 'OutForDelivery';
-      case 'Delivered':
-        return 'Delivered';
-      default:
-        return status;
-    }
+    const key = `PREVIOUS_ORDERS.STEP_${status.toUpperCase().replace(/[^A-Z]/g, '_')}`;
+    const translation = this.translate.instant(key);
+    return translation !== key ? translation : status;
   }
 
-  // الطلبات المفلترة
+  // Translate order status
+  getOrderStatusLabel(status: string): string {
+    const key = `ORDER.${status.toUpperCase()}`;
+    const translation = this.translate.instant(key);
+    return translation !== key ? translation : status;
+  }
+
+  // Translate payment method
+  getPaymentMethodLabel(method: string): string {
+    if (method === 'COD') {
+      return this.translate.instant('CHECKOUT.CASH_ON_DELIVERY');
+    } else if (method === 'CreditCard') {
+      return this.translate.instant('CHECKOUT.CREDIT_CARD');
+    }
+    return method;
+  }
+
+  // Filtered orders
   get filteredOrders() {
-    if (this.selectedFilter === 'All') {
+    const filterAll = this.translate.instant('PREVIOUS_ORDERS.FILTER_ALL');
+    const filterCompleted = this.translate.instant(
+      'PREVIOUS_ORDERS.FILTER_COMPLETED',
+    );
+    const filterRejected = this.translate.instant(
+      'PREVIOUS_ORDERS.FILTER_REJECTED',
+    );
+
+    if (this.selectedFilter === filterAll) {
       return this.orders;
-    } else if (this.selectedFilter === 'Completed') {
+    } else if (this.selectedFilter === filterCompleted) {
       return this.orders.filter(
-        (order) => order.shippingStatus === 'Delivered'
+        (order) => order.shippingStatus === 'Delivered',
       );
-    } else if (this.selectedFilter === 'Cancelled') {
+    } else if (this.selectedFilter === filterRejected) {
       return this.orders.filter(
-        (order) => order.shippingStatus === 'Cancelled'
+        (order) => order.shippingStatus === 'Cancelled',
       );
     }
     return this.orders;
@@ -148,30 +170,32 @@ export class PreviousOrders implements OnInit {
         .refundProduct(this.selectedProductId, this.refundReason.trim())
         .subscribe({
           next: () => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Product refund request sent successfully',
-                toast: true,
-                position: 'bottom-right',
-                showConfirmButton: false,
-                timer: 5000,
-                width: 500,
-                heightAuto: true,
-                background: '#166534',
-                color: '#fff',
-                customClass: {
-                  popup: 'custom-swal-toast',
-                },
-              });
+            Swal.fire({
+              icon: 'success',
+              title: this.translate.instant('COMMON.SUCCESS'),
+              text: this.translate.instant(
+                'PREVIOUS_ORDERS.PRODUCT_REFUND_SUCCESS',
+              ),
+              toast: true,
+              position: 'bottom-right',
+              showConfirmButton: false,
+              timer: 5000,
+              width: 500,
+              heightAuto: true,
+              background: '#166534',
+              color: '#fff',
+              customClass: {
+                popup: 'custom-swal-toast',
+              },
+            });
             this.closeRefundForms();
           },
           error: (err) => {
             Swal.fire({
-              title: 'Failed!',
+              title: this.translate.instant('PREVIOUS_ORDERS.FAILED_TITLE'),
               text:
                 err?.error?.message ||
-                '❌ Failed to send product refund request.',
+                this.translate.instant('PREVIOUS_ORDERS.PRODUCT_REFUND_ERROR'),
               icon: 'error',
               background: '#fff',
               color: '#000',
@@ -184,30 +208,32 @@ export class PreviousOrders implements OnInit {
         .refundOrder(this.selectedOrderId, this.refundReason.trim())
         .subscribe({
           next: () => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Order refund request sent successfully.!',
-                toast: true,
-                position: 'bottom-right',
-                showConfirmButton: false,
-                timer: 5000,
-                width: 500,
-                heightAuto: true,
-                background: '#166534',
-                color: '#fff',
-                customClass: {
-                  popup: 'custom-swal-toast',
-                },
-              });
+            Swal.fire({
+              icon: 'success',
+              title: this.translate.instant('COMMON.SUCCESS'),
+              text: this.translate.instant(
+                'PREVIOUS_ORDERS.ORDER_REFUND_SUCCESS',
+              ),
+              toast: true,
+              position: 'bottom-right',
+              showConfirmButton: false,
+              timer: 5000,
+              width: 500,
+              heightAuto: true,
+              background: '#166534',
+              color: '#fff',
+              customClass: {
+                popup: 'custom-swal-toast',
+              },
+            });
             this.closeRefundForms();
           },
           error: (err) => {
             Swal.fire({
-              title: 'Failed!',
+              title: this.translate.instant('PREVIOUS_ORDERS.FAILED_TITLE'),
               text:
                 err?.error?.message ||
-                '❌ Failed to send order refund request.',
+                this.translate.instant('PREVIOUS_ORDERS.ORDER_REFUND_ERROR'),
               icon: 'error',
               background: '#000',
               color: '#fff',
@@ -222,7 +248,7 @@ export class PreviousOrders implements OnInit {
 
     if (productId) {
       const product = order.orderItems.find(
-        (item) => item.productId === productId
+        (item) => item.productId === productId,
       );
       if (!product) return false;
 
@@ -249,23 +275,23 @@ export class PreviousOrders implements OnInit {
 
   // Progress labels
   shouldShowProgress(order: IPreviousOrder): boolean {
-    // Cancelled: لا تظهر البار
+    // Cancelled: don't show progress bar
     if (order.orderStatus === 'Cancelled' || order.orderStatus === 'Returned')
       return false;
 
-    // الدفع اونلاين: نعرضه لو الحالة وصلت لـ Processing فقط أو بعدها
+    // Online payment: show when Processing or later
     if (order.paymentMethod !== 'COD') {
       return (
         order.orderStatus === 'Processing' ||
         ['ReadyToShip', 'Shipped', 'OutForDelivery', 'Delivered'].includes(
-          order.shippingStatus
+          order.shippingStatus,
         )
       );
     }
 
-    // الدفع كاش: نعرضه من أول ReadyToShip
+    // COD: show from ReadyToShip
     return ['ReadyToShip', 'Shipped', 'OutForDelivery', 'Delivered'].includes(
-      order.shippingStatus
+      order.shippingStatus,
     );
   }
   getRefundStatuses(order: any): string {
