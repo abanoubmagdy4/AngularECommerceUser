@@ -1,4 +1,4 @@
-<section class="relative w-full min-h-screen overflow-hidden">
+<section *ngIf="shouldShowBannerSection" class="relative w-full min-h-screen overflow-hidden">
 
   <!-- Slides container: API banners if loaded, else fallback static images -->
   <ng-container *ngIf="bannersLoaded && banners.length > 0; else fallbackSlider">
@@ -6,8 +6,8 @@
       <ng-container *ngFor="let banner of banners; let i = index">
         <a class="w-full h-full flex-shrink-0 relative block" [href]="banner.redirectUrl || null"
           [target]="banner.redirectUrl ? '_blank' : null" [rel]="banner.redirectUrl ? 'noopener' : null">
-          <img [src]="getBannerImageUrl(banner)" [attr.alt]="getBannerTitle(banner)"
-            class="w-full h-full object-cover" />
+          <img [src]="getBannerImageUrl(banner)" [attr.alt]="getBannerTitle(banner)" class="w-full h-full object-cover"
+            (error)="onBannerImageError($event, banner)" />
           <div *ngIf="getBannerTitle(banner)"
             class="absolute bottom-24 left-1/2 -translate-x-1/2 text-white text-center px-4">
             <h2 class="text-2xl md:text-4xl font-bold drop-shadow-lg">{{ getBannerTitle(banner) }}</h2>
@@ -27,7 +27,8 @@
   <ng-template #fallbackSlider>
     <div #slidesContainer class="slides-container flex h-full w-full">
       <img *ngFor="let image of fallbackImages; let i = index" [src]="isMobile ? image.mobile : image.desktop"
-        class="w-full h-full object-cover flex-shrink-0" [attr.alt]="'HOME.SLIDE' | translate" />
+        class="w-full h-full object-cover flex-shrink-0" [attr.alt]="'HOME.SLIDE' | translate"
+        (error)="onFallbackImageError($event)" />
     </div>
 
     <!-- "Shop Now" -->

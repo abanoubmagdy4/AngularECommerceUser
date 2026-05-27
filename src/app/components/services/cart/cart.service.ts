@@ -64,15 +64,15 @@ export class CartItemService {
             return;
           }
 
-          const unitPrice = product.price;
+          const unitPrice = product.priceAfterDiscount;
           const payload = {
             id: 0, // 👈 لازم موجود حتى لو السيرفر بيهمله في الإضافة
             cartId: 0, // 👈 كذلك
             productId: product.id,
             productSizeId: sizeObj.id,
             quantity: quantity,
-            unitPrice: product.price,
-            totalPriceForOneItemType: product.price * quantity,
+            unitPrice: product.priceAfterDiscount,
+            totalPriceForOneItemType: product.priceAfterDiscount * quantity,
 
             // خصائص اتضافت في الـ DTO
             productName: product.name,

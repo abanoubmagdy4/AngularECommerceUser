@@ -65,6 +65,7 @@ export class ProductDetails implements OnInit {
             this.product,
           );
           console.log('Product details:', descHtml);
+          console.log('Product images paths:', res.productImagesPaths);
           this.description = this.sanitizer.bypassSecurityTrustHtml(descHtml);
 
           const careHtml = this.languageService.isArabic()
@@ -79,6 +80,14 @@ export class ProductDetails implements OnInit {
     }
 
     this.isLoggedInNow = !!this.authService.getToken();
+
+    // Subscribe to language changes to update slider position
+    this.languageService.currentLang$.subscribe(() => {
+      console.log('Language changed, updating slider position');
+      setTimeout(() => {
+        this.setPositionByIndex();
+      }, 100);
+    });
   }
   ngOnChanges() {}
   getSizes(): string[] {
@@ -101,18 +110,33 @@ export class ProductDetails implements OnInit {
       !this.product?.productImagesPaths ||
       this.product.productImagesPaths.length === 0
     ) {
+      console.log('No images found, using default');
       return ['/assets/images/default.png'];
     }
-    return this.product.productImagesPaths
+    const urls = this.product.productImagesPaths
       .slice()
       .sort((a, b) => a.priority - b.priority)
       .map((img) => {
-        if (img.imagePath.startsWith('http')) return img.imagePath;
-        if (img.imagePath.startsWith('/uploads'))
-          return `${environment.baseServerUrl}${img.imagePath}`;
-        if (img.imagePath.startsWith('/assets')) return img.imagePath;
-        return `/assets/images/${img.imagePath}`;
+        console.log('Processing image path:', img.imagePath);
+        if (img.imagePath.startsWith('http')) {
+          console.log('Using HTTP URL:', img.imagePath);
+          return img.imagePath;
+        }
+        if (img.imagePath.startsWith('/uploads')) {
+          const url = `${environment.baseServerUrl}${img.imagePath}`;
+          console.log('Using uploads URL:', url);
+          return url;
+        }
+        if (img.imagePath.startsWith('/assets')) {
+          console.log('Using assets URL:', img.imagePath);
+          return img.imagePath;
+        }
+        const url = `/assets/images/${img.imagePath}`;
+        console.log('Using fallback URL:', url);
+        return url;
       });
+    console.log('Final sorted image URLs:', urls);
+    return urls;
   }
 
   get currentImage(): string {
@@ -140,12 +164,28 @@ export class ProductDetails implements OnInit {
   }
 
   goToSlide(index: number) {
+    console.log('Going to slide:', index);
     this.currentSlide = index;
+    this.setPositionByIndex();
+  }
+
+  onImageError(event: Event, imgUrl: string) {
+    console.error('Image failed to load:', imgUrl);
+    const img = event.target as HTMLImageElement;
+    img.src = '/assets/images/default.png';
+  }
+
+  onImageLoad(event: Event, imgUrl: string) {
+    console.log('Image loaded successfully:', imgUrl);
   }
 
   getStockQuantity(size: string): number {
     const sizeObj = this.product?.productSizes?.find((s) => s.size === size);
     return sizeObj ? sizeObj.stockQuantity : 0;
+  }
+
+  get hasCareInstructions(): boolean {
+    return !!(this.product?.careAr || this.product?.careEn);
   }
 
   increaseQuantity(): void {
@@ -218,8 +258,8 @@ export class ProductDetails implements OnInit {
       productId: product.id,
       productSizeId: sizeObj.id,
       quantity: quantity,
-      unitPrice: product.price,
-      totalPriceForOneItemType: product.price * quantity,
+      unitPrice: product.priceAfterDiscount,
+      totalPriceForOneItemType: product.priceAfterDiscount * quantity,
       name: product.name,
       image: product.productImagesPaths?.[0]
         ? environment.baseServerUrl + product.productImagesPaths[0].imagePath
@@ -364,8 +404,8 @@ export class ProductDetails implements OnInit {
           this.product.productImagesPaths[0].imagePath
         : '/assets/images/default.png',
       quantity: this.quantity,
-      unitPrice: this.product.price,
-      totalPriceForOneItemType: this.product.price * this.quantity,
+      unitPrice: this.product.priceAfterDiscount,
+      totalPriceForOneItemType: this.product.priceAfterDiscount * this.quantity,
     };
 
     sessionStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
@@ -394,10 +434,18 @@ export class ProductDetails implements OnInit {
     cancelAnimationFrame(this.animationID!);
 
     const movedBy = this.currentTranslate - this.prevTranslate;
+    const isRTL = this.languageService.isArabic();
 
-    if (movedBy < -100 && this.currentSlide < this.sortedImageUrls.length - 1)
-      this.currentSlide++;
-    else if (movedBy > 100 && this.currentSlide > 0) this.currentSlide--;
+    // In RTL, the direction is reversed
+    if (isRTL) {
+      if (movedBy > 100 && this.currentSlide < this.sortedImageUrls.length - 1)
+        this.currentSlide++;
+      else if (movedBy < -100 && this.currentSlide > 0) this.currentSlide--;
+    } else {
+      if (movedBy < -100 && this.currentSlide < this.sortedImageUrls.length - 1)
+        this.currentSlide++;
+      else if (movedBy > 100 && this.currentSlide > 0) this.currentSlide--;
+    }
 
     this.setPositionByIndex();
   }
@@ -420,10 +468,18 @@ export class ProductDetails implements OnInit {
     cancelAnimationFrame(this.animationID!);
 
     const movedBy = this.currentTranslate - this.prevTranslate;
+    const isRTL = this.languageService.isArabic();
 
-    if (movedBy < -100 && this.currentSlide < this.sortedImageUrls.length - 1)
-      this.currentSlide++;
-    else if (movedBy > 100 && this.currentSlide > 0) this.currentSlide--;
+    // In RTL, the direction is reversed
+    if (isRTL) {
+      if (movedBy > 100 && this.currentSlide < this.sortedImageUrls.length - 1)
+        this.currentSlide++;
+      else if (movedBy < -100 && this.currentSlide > 0) this.currentSlide--;
+    } else {
+      if (movedBy < -100 && this.currentSlide < this.sortedImageUrls.length - 1)
+        this.currentSlide++;
+      else if (movedBy > 100 && this.currentSlide > 0) this.currentSlide--;
+    }
 
     this.setPositionByIndex();
   }
@@ -447,7 +503,10 @@ export class ProductDetails implements OnInit {
 
   setPositionByIndex() {
     const containerWidth = this.slidesContainer.nativeElement.clientWidth;
-    this.currentTranslate = -this.currentSlide * containerWidth;
+    const isRTL = this.languageService.isArabic();
+    this.currentTranslate = isRTL
+      ? this.currentSlide * containerWidth
+      : -this.currentSlide * containerWidth;
     this.prevTranslate = this.currentTranslate;
     if (this.slidesContainer)
       this.slidesContainer.nativeElement.style.transition =

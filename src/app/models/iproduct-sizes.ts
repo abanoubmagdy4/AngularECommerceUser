@@ -5,4 +5,7 @@ export interface IProductSizes {
   stockQuantity: number;
   width: number;
   height: number;
+  waist: number;
+  hips: number;
+  weight: number;
 }

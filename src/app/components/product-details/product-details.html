@@ -8,7 +8,8 @@
           (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd()" (mousedown)="onMouseDown($event)"
           (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()" (mouseleave)="onMouseLeave()" #slidesContainer>
           <div *ngFor="let img of sortedImageUrls" class="min-w-full">
-            <img [src]="img" [attr.alt]="product | localizedName" class="w-full h-full object-cover rounded" />
+            <img [src]="img" [attr.alt]="product | localizedName" class="w-full h-full object-cover rounded"
+              (error)="onImageError($event, img)" (load)="onImageLoad($event, img)" />
           </div>
         </div>
 
@@ -29,7 +30,8 @@
       <div class="flex gap-3 mt-4 overflow-x-auto justify-center w-full">
         <img *ngFor="let img of sortedImageUrls; let i = index" [src]="img" (click)="goToSlide(i)"
           class="h-16 w-16 object-cover cursor-pointer rounded border-2"
-          [ngClass]="{ 'border-black ring-2 ring-black': i === currentSlide, 'border-gray-300': i !== currentSlide }" />
+          [ngClass]="{ 'border-black ring-2 ring-black': i === currentSlide, 'border-gray-300': i !== currentSlide }"
+          (error)="onImageError($event, img)" />
       </div>
     </div>
 
@@ -127,7 +129,7 @@
             </span>
           </summary>
           <div style="color: #414040" class="pb-4 leading-relaxed text-left">
-            <ng-container *ngIf="product?.careAr || product?.careEn; else staticCare">
+            <ng-container *ngIf="hasCareInstructions; else staticCare">
               <div class="product-care" [innerHTML]="safeCare"></div>
             </ng-container>
             <ng-template #staticCare>
@@ -159,6 +161,9 @@
                     <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.SIZE_COL' | translate }}</th>
                     <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.WIDTH_COL' | translate }}</th>
                     <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.LENGTH_COL' | translate }}</th>
+                    <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.WAIST_COL' | translate }}</th>
+                    <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.HIPS_COL' | translate }}</th>
+                    <th class="px-3 py-2 text-center text-white">{{ 'PRODUCT_DETAILS.WEIGHT_COL' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -171,6 +176,15 @@
                     </td>
                     <td style="color: #414040" class="px-3 py-2">
                       {{ size.height }}
+                    </td>
+                    <td style="color: #414040" class="px-3 py-2">
+                      {{ size.waist }}
+                    </td>
+                    <td style="color: #414040" class="px-3 py-2">
+                      {{ size.hips }}
+                    </td>
+                    <td style="color: #414040" class="px-3 py-2">
+                      {{ size.weight }}
                     </td>
                   </tr>
                 </tbody>

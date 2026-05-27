@@ -283,6 +283,9 @@
     "SIZE_COL": "Size",
     "WIDTH_COL": "Width",
     "LENGTH_COL": "Length",
+    "WAIST_COL": "Waist",
+    "HIPS_COL": "Hips",
+    "WEIGHT_COL": "Weight",
     "LOADING": "Loading product...",
     "NO_DETAILS": "No product details available."
   },

@@ -313,6 +313,9 @@
     "SIZE_COL": "المقاس",
     "WIDTH_COL": "العرض",
     "LENGTH_COL": "الطول",
+    "WAIST_COL": "الخصر",
+    "HIPS_COL": "الأرداف",
+    "WEIGHT_COL": "الوزن",
     "LOADING": "جاري تحميل المنتج...",
     "NO_DETAILS": "لا تتوفر تفاصيل المنتج."
   },

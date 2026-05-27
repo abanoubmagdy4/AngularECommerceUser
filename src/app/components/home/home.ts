@@ -45,9 +45,9 @@ export class Home implements OnInit, OnDestroy {
   bannersLoaded = false;
 
   fallbackImages = [
-    { desktop: 'assets/images/1.png', mobile: 'assets/images/1.png' },
-    { desktop: 'assets/images/2.png', mobile: 'assets/images/2.png' },
-    { desktop: 'assets/images/3.png', mobile: 'assets/images/3.png' },
+    { desktop: '/assets/images/1.png', mobile: '/assets/images/1.png' },
+    { desktop: '/assets/images/2.png', mobile: '/assets/images/2.png' },
+    { desktop: '/assets/images/3.png', mobile: '/assets/images/3.png' },
   ];
 
   cachedImageUrls: Map<number, string> = new Map(); // bannerId -> cachedUrl
@@ -73,11 +73,16 @@ export class Home implements OnInit, OnDestroy {
     const path = this.isArabic
       ? banner.imageUrlAr || banner.imageUrlEn
       : banner.imageUrlEn || banner.imageUrlAr;
-    if (!path) return '';
+    if (!path) {
+      console.log('Banner has no image path, using default:', banner.id);
+      return '/assets/images/default.png';
+    }
 
     const fullUrl = path.startsWith('http')
       ? path
       : `${environment.baseServerUrl}/${path}`;
+
+    console.log('Banner image URL:', banner.id, fullUrl);
 
     // Fetch and cache for next render
     this.imageCache.getImage(fullUrl).subscribe((cachedUrl) => {
@@ -114,6 +119,10 @@ export class Home implements OnInit, OnDestroy {
       : this.fallbackImages.length;
   }
 
+  get shouldShowBannerSection(): boolean {
+    return this.bannersLoaded && this.banners.length > 0;
+  }
+
   ngOnInit() {
     this.bannerService.getActiveBanners().subscribe((banners) => {
       this.banners = banners;
@@ -125,6 +134,7 @@ export class Home implements OnInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.isMobile = window.innerWidth <= 768;
 
+      // Only start auto-slide if there are banners or fallback images
       this.intervalId = setInterval(() => {
         this.nextSlide();
       }, 5000);
@@ -183,5 +193,22 @@ export class Home implements OnInit, OnDestroy {
         'transform 0.7s ease-in-out';
       this.slidesContainer.nativeElement.style.transform = `translateX(${translateValue}px)`;
     }
+  }
+
+  onBannerImageError(event: Event, banner: IHomePageBanner) {
+    console.error(
+      'Banner image failed to load:',
+      banner.id,
+      banner.imageUrlEn,
+      banner.imageUrlAr,
+    );
+    const img = event.target as HTMLImageElement;
+    img.src = '/assets/images/default.png';
+  }
+
+  onFallbackImageError(event: Event) {
+    console.error('Fallback image failed to load');
+    const img = event.target as HTMLImageElement;
+    img.src = '/assets/images/default.png';
   }
 }

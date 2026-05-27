@@ -331,8 +331,8 @@ export class CartItemService {
               productId: product.id,
               productSizeId: sizeObj.id,
               quantity: quantity,
-              unitPrice: product.price,
-              totalPriceForOneItemType: product.price * quantity,
+              unitPrice: product.priceAfterDiscount,
+              totalPriceForOneItemType: product.priceAfterDiscount * quantity,
               productName: product.name,
               productImageUrl: (
                 product.productImagesPaths?.[0]?.imagePath || ''
