@@ -20,18 +20,29 @@
   </div>
 
   <!-- Price Range -->
-  <div class="mb-6 price-range-container">
+  <div class="mb-6">
     <label class="block font-bold mb-2 text-gray-700">{{ 'FILTER.PRICE_RANGE' | translate }}</label>
-    <div class="range-slider">
-      <div class="range-track"></div>
-      <div class="range-fill" [style.left.%]="(minPrice / maxRange) * 100"
-        [style.width.%]="((maxPrice - minPrice) / maxRange) * 100"></div>
-      <input type="range" [min]="minRange" [max]="maxRange" [(ngModel)]="minPrice" (input)="updateRange('min')" />
-      <input type="range" [min]="minRange" [max]="maxRange" [(ngModel)]="maxPrice" (input)="updateRange('max')" />
+    <div class="flex gap-2 mb-2">
+      <div class="flex-1">
+        <input type="number" [(ngModel)]="minPrice" [min]="minRange" [max]="maxRange"
+          [placeholder]="'FILTER.MIN' | translate"
+          class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400" />
+      </div>
+      <div class="flex-1">
+        <input type="number" [(ngModel)]="maxPrice" [min]="minRange" [max]="maxRange"
+          [placeholder]="'FILTER.MAX' | translate"
+          class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400" />
+      </div>
     </div>
-    <div class="price-values">
-      <span>{{ 'FILTER.MIN_PRICE' | translate }}{{ minPrice }}</span>
-      <span>{{ 'FILTER.MAX_PRICE' | translate }}{{ maxPrice }}</span>
+    <div class="flex gap-2">
+      <button (click)="applyPriceFilter()"
+        class="flex-1 bg-[#2f2f2f] hover:bg-[#1a1a1a] text-white px-4 py-2 rounded-lg transition">
+        {{ 'FILTER.APPLY' | translate }}
+      </button>
+      <button (click)="resetPriceFilter()"
+        class="flex-1 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition">
+        {{ 'FILTER.RESET_PRICE' | translate }}
+      </button>
     </div>
   </div>
 
@@ -41,13 +52,23 @@
     (click)="clearCategory()">
     {{ 'FILTER.ALL' | translate }}
   </div>
-  <div *ngFor="let cat of categories" class="mb-3">
+  <div *ngFor="let parentCat of parentCategories" class="mb-3">
     <div
       class="flex justify-between items-center cursor-pointer font-semibold text-gray-800 hover:text-blue-600 transition py-1"
-      (click)="toggleCategory(cat); selectCategory(cat.id)">
-      <span [class.text-blue-600]="selectedCategoryId === cat.id">{{ getCategoryName(cat) }}</span>
-      <span>{{ cat.open ? '−' : '+' }}</span>
+      (click)="toggleCategory(parentCat); selectCategory(parentCat.id)">
+      <span [class.text-blue-600]="selectedCategoryId === parentCat.id">{{ getCategoryName(parentCat) }}</span>
+      <span *ngIf="getChildCategories(parentCat.id).length > 0">{{ parentCat.open ? '−' : '+' }}</span>
     </div>
+    @if(parentCat.open) {
+    <div class="ml-4 mt-2 space-y-1">
+      <div *ngFor="let childCat of getChildCategories(parentCat.id)"
+        class="cursor-pointer text-sm text-gray-600 hover:text-blue-600 transition py-1 pl-2"
+        [class.text-blue-600]="selectedCategoryId === childCat.id"
+        (click)="selectCategory(childCat.id); $event.stopPropagation()">
+        {{ getCategoryName(childCat) }}
+      </div>
+    </div>
+    }
   </div>
 
   <!-- All Products Button -->
@@ -94,18 +115,27 @@
     </div>
 
     <!-- Price Range -->
-    <div class="mb-4 price-range-container">
+    <div class="mb-4">
       <label class="block font-bold mb-2">{{ 'FILTER.PRICE_RANGE' | translate }}</label>
-      <div class="range-slider">
-        <div class="range-track"></div>
-        <div class="range-fill" [style.left.%]="(minPrice / maxRange) * 100"
-          [style.width.%]="((maxPrice - minPrice) / maxRange) * 100"></div>
-        <input type="range" [min]="minRange" [max]="maxRange" [(ngModel)]="minPrice" (input)="updateRange('min')" />
-        <input type="range" [min]="minRange" [max]="maxRange" [(ngModel)]="maxPrice" (input)="updateRange('max')" />
+      <div class="flex gap-2 mb-2">
+        <div class="flex-1">
+          <input type="number" [(ngModel)]="minPrice" [min]="minRange" [max]="maxRange"
+            [placeholder]="'FILTER.MIN' | translate" class="w-full p-2 border rounded" />
+        </div>
+        <div class="flex-1">
+          <input type="number" [(ngModel)]="maxPrice" [min]="minRange" [max]="maxRange"
+            [placeholder]="'FILTER.MAX' | translate" class="w-full p-2 border rounded" />
+        </div>
       </div>
-      <div class="price-values">
-        <span>{{ 'FILTER.MIN_PRICE' | translate }}{{ minPrice }}</span>
-        <span>{{ 'FILTER.MAX_PRICE' | translate }}{{ maxPrice }}</span>
+      <div class="flex gap-2">
+        <button (click)="applyPriceFilter()"
+          class="flex-1 bg-[#2f2f2f] hover:bg-[#1a1a1a] text-white px-4 py-2 rounded transition">
+          {{ 'FILTER.APPLY' | translate }}
+        </button>
+        <button (click)="resetPriceFilter()"
+          class="flex-1 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded transition">
+          {{ 'FILTER.RESET_PRICE' | translate }}
+        </button>
       </div>
     </div>
 
@@ -116,12 +146,22 @@
         (click)="clearCategory()">
         {{ 'FILTER.ALL' | translate }}
       </li>
-      <li *ngFor="let cat of categories">
+      <li *ngFor="let parentCat of parentCategories">
         <div class="flex justify-between items-center cursor-pointer font-semibold py-1"
-          (click)="toggleCategory(cat); selectCategory(cat.id)">
-          <span [class.text-blue-600]="selectedCategoryId === cat.id">{{ getCategoryName(cat) }}</span>
-          <span>{{ cat.open ? '−' : '+' }}</span>
+          (click)="toggleCategory(parentCat); selectCategory(parentCat.id)">
+          <span [class.text-blue-600]="selectedCategoryId === parentCat.id">{{ getCategoryName(parentCat) }}</span>
+          <span *ngIf="getChildCategories(parentCat.id).length > 0">{{ parentCat.open ? '−' : '+' }}</span>
         </div>
+        @if(parentCat.open) {
+        <div class="ml-4 mt-2 space-y-1">
+          <div *ngFor="let childCat of getChildCategories(parentCat.id)"
+            class="cursor-pointer text-sm text-gray-600 hover:text-blue-600 transition py-1 pl-2"
+            [class.text-blue-600]="selectedCategoryId === childCat.id"
+            (click)="selectCategory(childCat.id); $event.stopPropagation()">
+            {{ getCategoryName(childCat) }}
+          </div>
+        </div>
+        }
       </li>
     </ul>
 

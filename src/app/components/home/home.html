@@ -1,23 +1,48 @@
 <section class="relative w-full min-h-screen overflow-hidden">
 
-  <!-- Slides container -->
-  <div #slidesContainer class="slides-container flex h-full w-full">
-    <img *ngFor="let image of images; let i = index" [src]="isMobile ? image.mobile : image.desktop"
-      class="w-full h-full object-cover flex-shrink-0" [attr.alt]="'HOME.SLIDE' | translate" />
-  </div>
+  <!-- Slides container: API banners if loaded, else fallback static images -->
+  <ng-container *ngIf="bannersLoaded && banners.length > 0; else fallbackSlider">
+    <div #slidesContainer class="slides-container flex h-full w-full">
+      <ng-container *ngFor="let banner of banners; let i = index">
+        <a class="w-full h-full flex-shrink-0 relative block" [href]="banner.redirectUrl || null"
+          [target]="banner.redirectUrl ? '_blank' : null" [rel]="banner.redirectUrl ? 'noopener' : null">
+          <img [src]="getBannerImageUrl(banner)" [attr.alt]="getBannerTitle(banner)"
+            class="w-full h-full object-cover" />
+          <div *ngIf="getBannerTitle(banner)"
+            class="absolute bottom-24 left-1/2 -translate-x-1/2 text-white text-center px-4">
+            <h2 class="text-2xl md:text-4xl font-bold drop-shadow-lg">{{ getBannerTitle(banner) }}</h2>
+          </div>
+        </a>
+      </ng-container>
+    </div>
 
-  <!-- "Shop Now" -->
-  <a [routerLink]="['/allProducts']"
-    class="shop-now-btn absolute bottom-20 text-3xl left-1/2 -translate-x-1/2 text-white font-semibold hover:scale-110 transition-transform">
-    {{ 'HOME.SHOP_NOW' | translate }}
-  </a>
+    <!-- Dots -->
+    <div class="dots-container absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
+      <span *ngFor="let banner of banners; let i = index" (click)="goToSlide(i)" [class.active]="currentSlide === i"
+        class="dot"></span>
+    </div>
+  </ng-container>
 
-  <!-- Dots -->
-  <div class="dots-container absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
-    <span *ngFor="let image of images; let i = index" (click)="goToSlide(i)" [class.active]="currentSlide === i"
-      class="dot"></span>
+  <!-- Fallback static slider -->
+  <ng-template #fallbackSlider>
+    <div #slidesContainer class="slides-container flex h-full w-full">
+      <img *ngFor="let image of fallbackImages; let i = index" [src]="isMobile ? image.mobile : image.desktop"
+        class="w-full h-full object-cover flex-shrink-0" [attr.alt]="'HOME.SLIDE' | translate" />
+    </div>
 
-  </div>
+    <!-- "Shop Now" -->
+    <a [routerLink]="['/allProducts']"
+      class="shop-now-btn absolute bottom-20 text-3xl left-1/2 -translate-x-1/2 text-white font-semibold hover:scale-110 transition-transform">
+      {{ 'HOME.SHOP_NOW' | translate }}
+    </a>
+
+    <!-- Dots -->
+    <div class="dots-container absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
+      <span *ngFor="let image of fallbackImages; let i = index" (click)="goToSlide(i)"
+        [class.active]="currentSlide === i" class="dot"></span>
+    </div>
+  </ng-template>
+
 </section>
 
 <app-new-arrival [displayLimit]="3"></app-new-arrival>

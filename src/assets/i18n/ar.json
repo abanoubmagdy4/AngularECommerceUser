@@ -52,7 +52,8 @@
     "ERROR": "خطأ",
     "SUCCESS": "نجاح",
     "WARNING": "تحذير",
-    "INFO": "معلومة"
+    "INFO": "معلومة",
+    "SUBMIT": "إرسال"
   },
   "HEADER": {
     "MENU": "القائمة",
@@ -399,7 +400,11 @@
     "RESET": "كل المنتجات",
     "CLOSE": "إغلاق",
     "OPEN": "تصفية",
-    "ALL_SUBCATEGORY": "الكل"
+    "ALL_SUBCATEGORY": "الكل",
+    "MIN": "أدنى",
+    "MAX": "أقصى",
+    "APPLY": "تطبيق",
+    "RESET_PRICE": "إعادة تعيين"
   },
   "SORT": {
     "LABEL": "ترتيب حسب",

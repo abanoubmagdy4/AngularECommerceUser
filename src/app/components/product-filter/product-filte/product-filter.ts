@@ -54,6 +54,8 @@ export class ProductFilter implements OnInit, OnDestroy {
 
   selectedCategoryId?: number;
   categories: any[] = [];
+  parentCategories: any[] = [];
+  childCategories: Map<number, any[]> = new Map();
 
   private searchSubject = new Subject<string>();
   private sub = new Subscription();
@@ -88,7 +90,28 @@ export class ProductFilter implements OnInit, OnDestroy {
   loadCategories() {
     this.categoryService.getCategories().subscribe((res) => {
       this.categories = res.map((cat: any) => ({ ...cat, open: false }));
+      this.organizeCategories();
     });
+  }
+
+  organizeCategories() {
+    this.parentCategories = this.categories.filter(
+      (cat) => cat.parentID === null || cat.parentID === undefined,
+    );
+    this.childCategories.clear();
+
+    this.categories.forEach((cat) => {
+      if (cat.parentID !== null && cat.parentID !== undefined) {
+        if (!this.childCategories.has(cat.parentID)) {
+          this.childCategories.set(cat.parentID, []);
+        }
+        this.childCategories.get(cat.parentID)!.push({ ...cat, open: false });
+      }
+    });
+  }
+
+  getChildCategories(parentId: number): any[] {
+    return this.childCategories.get(parentId) || [];
   }
 
   toggleCategory(cat: any) {
@@ -114,13 +137,18 @@ export class ProductFilter implements OnInit, OnDestroy {
     this.emitFilters();
   }
 
-  updateRange(type: 'min' | 'max') {
-    if (type === 'min' && this.minPrice > this.maxPrice) {
+  applyPriceFilter() {
+    if (this.minPrice > this.maxPrice) {
+      const temp = this.minPrice;
       this.minPrice = this.maxPrice;
+      this.maxPrice = temp;
     }
-    if (type === 'max' && this.maxPrice < this.minPrice) {
-      this.maxPrice = this.minPrice;
-    }
+    this.emitFilters();
+  }
+
+  resetPriceFilter() {
+    this.minPrice = this.minRange;
+    this.maxPrice = this.maxRange;
     this.emitFilters();
   }
 

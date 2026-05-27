@@ -52,7 +52,8 @@
     "ERROR": "Error",
     "SUCCESS": "Success",
     "WARNING": "Warning",
-    "INFO": "Info"
+    "INFO": "Info",
+    "SUBMIT": "Submit"
   },
   "HEADER": {
     "MENU": "Menu",
@@ -399,7 +400,11 @@
     "RESET": "All Products",
     "CLOSE": "Close",
     "OPEN": "Filter",
-    "ALL_SUBCATEGORY": "All"
+    "ALL_SUBCATEGORY": "All",
+    "MIN": "Min",
+    "MAX": "Max",
+    "APPLY": "Apply",
+    "RESET_PRICE": "Reset"
   },
   "SORT": {
     "LABEL": "Sort by",

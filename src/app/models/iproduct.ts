@@ -27,4 +27,6 @@ export interface IProduct {
   fit?: string;
   PublishAt: Date;
   IsPublished: boolean;
+  careAr?: string | null;
+  careEn?: string | null;
 }

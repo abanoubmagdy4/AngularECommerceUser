@@ -127,13 +127,16 @@
             </span>
           </summary>
           <div style="color: #414040" class="pb-4 leading-relaxed text-left">
-            <p>{{ 'PRODUCT_DETAILS.CARE_INTRO' | translate }}</p>
-            <ul class="list-disc list-inside mt-2 space-y-1">
-              <li>{{ 'PRODUCT_DETAILS.CARE_BODY_1' | translate }}</li>
-              <li>
-                {{ 'PRODUCT_DETAILS.CARE_BODY_2' | translate }}
-              </li>
-            </ul>
+            <ng-container *ngIf="product?.careAr || product?.careEn; else staticCare">
+              <div class="product-care" [innerHTML]="safeCare"></div>
+            </ng-container>
+            <ng-template #staticCare>
+              <p>{{ 'PRODUCT_DETAILS.CARE_INTRO' | translate }}</p>
+              <ul class="list-disc list-inside mt-2 space-y-1">
+                <li>{{ 'PRODUCT_DETAILS.CARE_BODY_1' | translate }}</li>
+                <li>{{ 'PRODUCT_DETAILS.CARE_BODY_2' | translate }}</li>
+              </ul>
+            </ng-template>
           </div>
         </details>
 

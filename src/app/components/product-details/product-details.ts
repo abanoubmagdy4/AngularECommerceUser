@@ -39,6 +39,7 @@ export class ProductDetails implements OnInit {
   isLoggedInNow = false;
   safeDescription!: SafeHtml;
   description!: SafeHtml;
+  safeCare!: SafeHtml;
   constructor(
     private route: ActivatedRoute,
     private productDetailsService: ProductDetailsService,
@@ -65,6 +66,11 @@ export class ProductDetails implements OnInit {
           );
           console.log('Product details:', descHtml);
           this.description = this.sanitizer.bypassSecurityTrustHtml(descHtml);
+
+          const careHtml = this.languageService.isArabic()
+            ? res.careAr || res.careEn || ''
+            : res.careEn || res.careAr || '';
+          this.safeCare = this.sanitizer.bypassSecurityTrustHtml(careHtml);
         },
         error: (err) => {
           this.isLoading = false;

@@ -9,10 +9,9 @@
   <!-- منتجات -->
   <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 lg:px-8 mt-6 lg:mt-0 w-full">
     @for (prd of filteredProducts; track $index;) {
-    <section
-      class="product-card rounded-lg overflow-hidden flex flex-col bg-white shadow-sm hover:shadow-md transition-all duration-300">
-      <a [routerLink]="['/product-details', prd.id]" class="flex flex-col h-full">
-        <div class="relative h-64 sm:h-72 lg:h-80 w-full overflow-hidden group bg-gray-100">
+    <section class="rounded-lg overflow-hidden flex flex-col hover:scale-110">
+      <a [routerLink]="['/product-details', prd.id]" class="flex flex-col items-center mb-4">
+        <div class="relative h-64 sm:h-72 lg:h-80 w-full overflow-hidden group">
           <!-- Sale Badge -->
           @if(calculateDiscountPercentage(prd) > 0) {
           <div class="absolute top-3 left-3 z-10">
@@ -25,34 +24,28 @@
 
           <!-- الصورة الأساسية -->
           <img [src]="getImageUrl(prd, 0)" [attr.alt]="prd | localizedName"
-            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0" />
+            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0" />
 
           <!-- الصورة الثانية تظهر مع الهوفر -->
           <img [src]="getImageUrl(prd, 1)" [attr.alt]="(prd | localizedName) + ' alt'"
-            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
+            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
         </div>
 
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="product-name text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 min-h-[2.5rem]">
-            {{ prd | localizedName }}
-          </h3>
-          <div class="mt-auto pt-3">
-            @if(calculateDiscountPercentage(prd) > 0) {
-            <div class="flex items-center gap-2">
-              <p class="text-gray-400 line-through text-xs">
-                {{prd.price | currency : 'EGP ' : 'code'}}
-              </p>
-              <p class="text-base font-bold text-gray-900">
-                {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
-              </p>
-            </div>
-            } @else {
-            <p class="text-base font-bold text-gray-900">
-              {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
-            </p>
-            }
-          </div>
-        </div>
+        <h3 class="mt-4 text-sm font-bold text-gray-900 sm:text-base">
+          {{ prd | localizedName }}
+        </h3>
+        @if(calculateDiscountPercentage(prd) > 0) {
+        <p style="color: #4e4e4e" class="mt-1 line-through">
+          {{prd.price | currency : 'EGP ' : 'code'}}
+        </p>
+        <p class="text-black font-bold mt-1">
+          {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+        </p>
+        } @else {
+        <p class="mt-2 font-bold text-black">
+          {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+        </p>
+        }
       </a>
     </section>
     } @if(filteredProducts.length === 0) {
