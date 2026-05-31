@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "dist/ECommerceLocalBrand_Angular",
+  "devCommand": "ng serve",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

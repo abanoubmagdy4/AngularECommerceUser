@@ -8,7 +8,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:Ecommerce_local_brand_front": "node dist/Ecommerce_local_brand_front/server/server.mjs"
+    "serve:ssr": "node dist/ECommerceLocalBrand_Angular/server/server.mjs",
+    "vercel-build": "ng build --configuration production"
   },
   "private": true,
   "dependencies": {
