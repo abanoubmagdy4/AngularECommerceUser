@@ -2,15 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IProduct } from '../../../models/iproduct';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { IPaginate } from '../../../models/ipaginate';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
-
-  constructor(private _httpClient: HttpClient) { }
+  constructor(private _httpClient: HttpClient) {}
 
   getAllProductsByPaginate(pageIndex: number): Observable<IPaginate<IProduct>> {
     const url = `${environment.urlPath}Products/paginated?PageIndex=${pageIndex}`;

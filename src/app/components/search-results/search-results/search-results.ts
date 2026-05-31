@@ -3,7 +3,7 @@ import { IProduct } from '../../../models/iproduct';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { IAIProductSearchResult } from '../../../models/iaiproduct-search-result';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageService } from '../../../shared/services/language/language.service';
 import { ProductDetailsService } from '../../../shared/services/Product/product-details.service';

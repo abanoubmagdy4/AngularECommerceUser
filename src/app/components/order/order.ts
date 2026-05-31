@@ -10,7 +10,7 @@ import {
   IAddress,
 } from '../../models/IOrder';
 import { ICartItem } from '../../models/ICartItem';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { Router, RouterModule } from '@angular/router';
 import {
   FormsModule,

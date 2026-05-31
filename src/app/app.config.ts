@@ -9,11 +9,7 @@ import {
   withViewTransitions,
 } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import {
-  provideHttpClient,
-  withFetch,
-  withInterceptors,
-} from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import {
   provideClientHydration,
@@ -56,10 +52,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes, withViewTransitions(), withComponentInputBinding()),
     provideAnimations(),
-    provideHttpClient(
-      withFetch(),
-      withInterceptors([spinnerInterceptor, authInterceptor]),
-    ),
+    provideHttpClient(withInterceptors([spinnerInterceptor, authInterceptor])),
     provideClientHydration(withEventReplay()),
     importProvidersFrom(
       TranslateModule.forRoot({

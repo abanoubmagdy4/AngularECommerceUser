@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { IProduct } from '../../../models/iproduct';
 import { IPaginate } from '../../../models/ipaginate';
 import { PaginatedResult } from '../../../models/paginated-result';

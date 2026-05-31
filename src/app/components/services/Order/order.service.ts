@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IProduct } from '../../../models/iproduct';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { ICustomer, IOrder } from '../../../models/IOrder';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
@@ -13,7 +13,10 @@ import { AuthService } from '../Auth/auth.service';
   providedIn: 'root',
 })
 export class OrderService {
-  constructor(private _httpClient: HttpClient, private auth: AuthService) {}
+  constructor(
+    private _httpClient: HttpClient,
+    private auth: AuthService,
+  ) {}
 
   // 1. Get addresses for specific user (by ID)
   getAddressesByUserId(userId: string): Observable<any[]> {
@@ -25,7 +28,7 @@ export class OrderService {
 
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
   }
 
@@ -42,7 +45,7 @@ export class OrderService {
   checkoutOrder(paymentData: any): Observable<any> {
     return this._httpClient.post<any>(
       `${environment.baseServerUrl}/api/payment/checkout`,
-      paymentData
+      paymentData,
     );
   }
   // 4. Post  getCustomerById
@@ -65,7 +68,7 @@ export class OrderService {
             errorMessage = 'Cannot connect to the server.';
           }
           return throwError(() => new Error(errorMessage));
-        })
+        }),
       );
   }
 }

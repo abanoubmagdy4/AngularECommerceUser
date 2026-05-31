@@ -4,7 +4,7 @@ import { NewArrivalsService } from '../../shared/services/new-arrivals/new-arriv
 import { IProduct } from '../../models/iproduct';
 import { Pagination } from '../pagination/pagination';
 import { RouterLink } from '@angular/router';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { RealTimeService } from '../../shared/services/RealTime/real-time-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { LocalizedNamePipe } from '../../shared/pipes/localized-name.pipe';

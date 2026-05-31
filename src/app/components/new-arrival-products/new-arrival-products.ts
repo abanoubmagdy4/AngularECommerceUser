@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { NewArrivalsService } from '../../shared/services/new-arrivals/new-arrivals.service';
 import { IProduct } from '../../models/iproduct';
 import { Pagination } from '../pagination/pagination';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { RealTimeService } from '../../shared/services/RealTime/real-time-service';
 import { LocalizedNamePipe } from '../../shared/pipes/localized-name.pipe';
 

@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { IProduct } from '../../../models/iproduct';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../Auth/auth.service';
 import { ICartItem } from '../../../models/ICartItem';
 import { isPlatformBrowser } from '@angular/common';

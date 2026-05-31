@@ -88,7 +88,8 @@
       </p>
 
       <div class="space-y-4 text-center">
-        <a (click)="completeCheckout()"
+        <a (click)="cartItems.length > 0 ? completeCheckout() : null" [class.opacity-50]="cartItems.length === 0"
+          [class.pointer-events-none]="cartItems.length === 0"
           class="block rounded-sm bg-black px-5 py-3 text-sm border text-white transition hover:bg-transparent hover:text-black">
           {{ 'CART.CHECKOUT' | translate }}
         </a>

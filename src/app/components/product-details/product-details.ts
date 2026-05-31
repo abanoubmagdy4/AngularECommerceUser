@@ -11,7 +11,7 @@ import { IProduct } from '../../models/iproduct';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { CartItemService } from '../../shared/services/cart/cart.service';
 import { AuthService } from '../../shared/services/Auth/auth.service';
 import { Router } from '@angular/router';
@@ -511,20 +511,22 @@ export class ProductDetails implements OnInit {
   }
 
   setPositionByIndex() {
+    if (!this.slidesContainer || !this.slidesContainer.nativeElement) {
+      return;
+    }
     const containerWidth = this.slidesContainer.nativeElement.clientWidth;
     const isRTL = this.languageService.isArabic();
     this.currentTranslate = isRTL
       ? this.currentSlide * containerWidth
       : -this.currentSlide * containerWidth;
     this.prevTranslate = this.currentTranslate;
-    if (this.slidesContainer)
-      this.slidesContainer.nativeElement.style.transition =
-        'transform 0.7s ease-in-out';
+    this.slidesContainer.nativeElement.style.transition =
+      'transform 0.7s ease-in-out';
     this.setSliderPosition();
 
     // إزالة الانتقال بعد الانتهاء عشان السحب يكون سلس بعد كده
     setTimeout(() => {
-      if (this.slidesContainer)
+      if (this.slidesContainer && this.slidesContainer.nativeElement)
         this.slidesContainer.nativeElement.style.transition = 'none';
     }, 700);
   }

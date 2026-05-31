@@ -11,7 +11,7 @@ import { CartItemService } from '../../shared/services/cart/cart.service';
 import { AuthService } from '../../shared/services/Auth/auth.service';
 import { ICartItem } from '../../models/ICartItem';
 import { RouterModule } from '@angular/router';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
 import { ProductDetailsService } from '../../shared/services/Product/product-details.service';
 import { MatDialog } from '@angular/material/dialog';

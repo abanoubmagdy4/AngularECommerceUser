@@ -14,7 +14,7 @@ import { ExploreStyles } from '../explore-styles/explore-styles';
 import { DiscountProductsComponent } from '../discount-Products/discount-Products';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageService } from '../../shared/services/language/language.service';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { HomePageBannerService } from '../../shared/services/home-page-banner.service';
 import { ImageCacheService } from '../../shared/services/image-cache.service';
 import { IHomePageBanner } from '../../models/ihome-page-banner';
