@@ -124,17 +124,23 @@ export class Home implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.loadBanners();
+    this.initializeBrowserFeatures();
+  }
+
+  private loadBanners(): void {
     this.bannerService.getActiveBanners().subscribe((banners) => {
       this.banners = banners;
       this.bannersLoaded = true;
       this.currentSlide = 0;
       this.preloadBannerImages();
     });
+  }
 
+  private initializeBrowserFeatures(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.isMobile = window.innerWidth <= 768;
 
-      // Only start auto-slide if there are banners or fallback images
       this.intervalId = setInterval(() => {
         this.nextSlide();
       }, 5000);

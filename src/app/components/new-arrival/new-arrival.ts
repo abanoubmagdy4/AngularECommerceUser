@@ -35,16 +35,17 @@ export class NewArrival implements OnInit {
 
   ngOnInit() {
     this.loadNewArrivals();
+    this.initializeRealTimeUpdates();
+  }
+
+  private initializeRealTimeUpdates(): void {
     this.realTimeService.onNewProductsArrived((newProducts) => {
-      // بس لو المستخدم في أول صفحة
       if (this.currentPageIndex === 1) {
-        const totalPerPage = 12; // أو العدد اللي عندك لكل صفحة
+        const totalPerPage = 12;
         const updatedProducts = this.sortProductsByDiscountAndPrice([
           ...newProducts,
           ...this.filteredProducts,
         ]);
-
-        // قلل العدد عشان يفضل ثابت
         this.filteredProducts = updatedProducts.slice(0, totalPerPage);
       }
     });

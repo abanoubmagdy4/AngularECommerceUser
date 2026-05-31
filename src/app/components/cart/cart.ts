@@ -52,9 +52,17 @@ export class Cart implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeCartCount();
+    this.loadCart();
+  }
+
+  private initializeCartCount(): void {
     this.cartService.cartCount$.subscribe((count) => {
-      this.cartCount = count; // Update cart count
+      this.cartCount = count;
     });
+  }
+
+  private loadCart(): void {
     const token = this.authService.getToken();
 
     if (token) {

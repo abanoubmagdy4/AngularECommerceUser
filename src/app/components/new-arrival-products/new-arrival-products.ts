@@ -36,10 +36,17 @@ export class NewArrivalProductsComponent implements OnInit {
 
   ngOnInit() {
     this.loadNewArrivalProducts();
+    this.initializeRealTimeUpdates();
+  }
+
+  private initializeRealTimeUpdates(): void {
     this.realTimeService.onNewProductsArrived((newProducts) => {
       if (this.currentPageIndex === 1) {
         const totalPerPage = 12;
-        const updatedProducts = this.sortProductsByDiscountAndPrice([...newProducts, ...this.filteredProducts]);
+        const updatedProducts = this.sortProductsByDiscountAndPrice([
+          ...newProducts,
+          ...this.filteredProducts,
+        ]);
         this.filteredProducts = updatedProducts.slice(0, totalPerPage);
       }
     });
@@ -48,7 +55,9 @@ export class NewArrivalProductsComponent implements OnInit {
   loadNewArrivalProducts(pageIndex: number = 1): void {
     this._NewArrivalsService.getNewArrivalProducts(pageIndex).subscribe({
       next: (response) => {
-        this.filteredProducts = this.sortProductsByDiscountAndPrice(response.items);
+        this.filteredProducts = this.sortProductsByDiscountAndPrice(
+          response.items,
+        );
         this.currentPageIndex = response.pageIndex;
         this.totalPages = response.totalPages;
       },

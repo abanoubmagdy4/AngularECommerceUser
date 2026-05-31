@@ -36,6 +36,10 @@ export class DiscountProductsComponent implements OnInit {
 
   ngOnInit() {
     this.loadDiscountProducts();
+    this.initializeRealTimeUpdates();
+  }
+
+  private initializeRealTimeUpdates(): void {
     this.realTimeService.onNewProductsArrived((newProducts) => {
       if (this.currentPageIndex === 1) {
         const totalPerPage = 12;

@@ -54,6 +54,12 @@ export class ProductDetails implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadProduct();
+    this.checkAuthStatus();
+    this.initializeLanguageSubscription();
+  }
+
+  private loadProduct(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.productDetailsService.getProductById(+id).subscribe({
@@ -78,10 +84,13 @@ export class ProductDetails implements OnInit {
         },
       });
     }
+  }
 
+  private checkAuthStatus(): void {
     this.isLoggedInNow = !!this.authService.getToken();
+  }
 
-    // Subscribe to language changes to update slider position
+  private initializeLanguageSubscription(): void {
     this.languageService.currentLang$.subscribe(() => {
       console.log('Language changed, updating slider position');
       setTimeout(() => {

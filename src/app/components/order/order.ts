@@ -115,7 +115,14 @@ export class Order implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Synchronize controls with component state
+    this.initializeAddressControls();
+    this.loadUserDataIfLoggedIn();
+    this.loadGovernorates();
+    this.prefillCustomerInfo();
+    this.loadCart();
+  }
+
+  private initializeAddressControls(): void {
     this.addressSelectControl.valueChanges.subscribe((val: string | null) => {
       this.selectedAddressId = val;
       if (!this.useNewAddress) {
@@ -126,10 +133,9 @@ export class Order implements OnInit, OnDestroy {
       this.useNewAddress = !!val;
       this.onToggleNewAddress();
     });
-    this.loadUserDataIfLoggedIn();
-    this.loadGovernorates();
+  }
 
-    // Pre-fill form if customerInfo is available
+  private prefillCustomerInfo(): void {
     if (this.order.customerInfo) {
       this.orderForm.patchValue({
         email: this.order.customerInfo.email || '',
@@ -138,7 +144,9 @@ export class Order implements OnInit, OnDestroy {
         phoneNumber: this.order.customerInfo.phoneNumber || '',
       });
     }
+  }
 
+  private loadCart(): void {
     const nav = this.router.getCurrentNavigation();
     let buyNowItem = nav?.extras?.state?.['buyNowItem'];
 

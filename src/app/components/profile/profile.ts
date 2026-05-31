@@ -28,6 +28,11 @@ export class ProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeForm();
+    this.loadProfile();
+  }
+
+  private initializeForm(): void {
     this.profileForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -35,8 +40,6 @@ export class ProfileComponent implements OnInit {
       phoneNumber: ['', Validators.required],
       dateOfBirth: ['', Validators.required],
     });
-
-    this.loadProfile();
   }
 
   loadProfile() {

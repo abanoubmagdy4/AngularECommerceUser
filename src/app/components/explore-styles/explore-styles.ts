@@ -25,13 +25,10 @@ export class ExploreStyles implements OnInit {
   loadCategories() {
     this.categoryService.getCategories().subscribe({
       next: (data) => {
-        console.log('Categories loaded:', data);
-        // Filter to show only parent categories (parentID is null)
         const parentCategories = data.filter(
           (category) => category.parentID === null,
         );
-        this.categories = parentCategories.slice(0, 8); // Limit to 8 categories for the home page
-        console.log('Parent categories after filter:', this.categories);
+        this.categories = parentCategories.slice(0, 8);
       },
       error: (err) => {
         console.error('Error loading categories:', err);

@@ -52,7 +52,15 @@ export class PreviousOrders implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeFilter();
+    this.loadOrders();
+  }
+
+  private initializeFilter(): void {
     this.selectedFilter = this.translate.instant('PREVIOUS_ORDERS.FILTER_ALL');
+  }
+
+  private loadOrders(): void {
     this.previousOrderService.getPreviousOrders().subscribe({
       next: (response) => {
         this.orders = response;

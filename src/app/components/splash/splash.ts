@@ -16,9 +16,11 @@ export class Splash implements OnInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      // Browser environment only
+    this.initializeSplash();
+  }
 
+  private initializeSplash(): void {
+    if (isPlatformBrowser(this.platformId)) {
       const splashShown = localStorage.getItem('splashShown');
 
       if (splashShown) {
@@ -32,8 +34,6 @@ export class Splash implements OnInit {
         }, 7000);
       }
     } else {
-      // Server-side rendering (SSR)
-      // Show content without splash
       this.showSplash = false;
     }
   }

@@ -25,6 +25,10 @@ export class NotFound implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loadOrderSummary();
+  }
+
+  private loadOrderSummary(): void {
     const navigation = this.router.getCurrentNavigation();
     this.orderSummary = navigation?.extras?.state?.['orderSummary'];
 

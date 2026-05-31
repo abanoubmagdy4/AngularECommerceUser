@@ -50,6 +50,11 @@ export class AllProducts implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeRouteParams();
+    this.initializeRealTimeUpdates();
+  }
+
+  private initializeRouteParams(): void {
     this.route.queryParamMap.subscribe((params) => {
       const isNewArrival = params.get('isNewArrival') === 'true';
       const hasDiscount = params.get('discount') === 'true';
@@ -65,14 +70,13 @@ export class AllProducts implements OnInit {
         this.loadProducts();
       }
     });
+  }
 
+  private initializeRealTimeUpdates(): void {
     this.realTimeService.onNewProductsArrived((newProducts) => {
-      // بس لو المستخدم في أول صفحة
       if (this.currentPageIndex === 1) {
-        const totalPerPage = 12; // أو العدد اللي عندك لكل صفحة
+        const totalPerPage = 12;
         const updatedProducts = [...newProducts, ...this.filteredProducts];
-
-        // قلل العدد عشان يفضل ثابت
         this.filteredProducts = updatedProducts.slice(0, totalPerPage);
       }
     });

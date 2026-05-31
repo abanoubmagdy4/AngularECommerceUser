@@ -42,6 +42,10 @@ export class ContactUs implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeForm();
+  }
+
+  private initializeForm(): void {
     this.buildForm();
   }
 

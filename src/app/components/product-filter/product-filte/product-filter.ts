@@ -67,6 +67,10 @@ export class ProductFilter implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadCategories();
+    this.initializeSearchSubscription();
+  }
+
+  private initializeSearchSubscription(): void {
     this.sub.add(
       this.searchSubject
         .pipe(debounceTime(300), distinctUntilChanged())

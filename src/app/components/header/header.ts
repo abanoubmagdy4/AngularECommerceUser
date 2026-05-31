@@ -69,6 +69,10 @@ export class Header implements OnInit {
       });
   }
   ngOnInit(): void {
+    this.initializeCartCount();
+  }
+
+  private initializeCartCount(): void {
     this.cartservice.cartCount$.subscribe((count) => {
       this.cartCount = count;
     });
