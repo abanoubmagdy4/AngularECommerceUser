@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run vercel-build",
-  "outputDirectory": "dist/ECommerceLocalBrand_Angular",
+  "outputDirectory": "dist/ECommerceLocalBrand_Angular/browser",
   "devCommand": "ng serve",
   "framework": null,
   "rewrites": [
