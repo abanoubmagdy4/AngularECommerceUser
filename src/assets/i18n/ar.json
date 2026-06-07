@@ -478,6 +478,21 @@
     "INVALID_PHONE": "الرجاء إدخال رقم هاتف مصري صحيح.",
     "INVALID_VALUE": "الرجاء إدخال قيمة صحيحة."
   },
+  "TABS": {
+    "HOME": "الرئيسية",
+    "ALL_PRODUCTS": "كل المنتجات",
+    "DISCOUNT_PRODUCTS": "منتجات مخفضة",
+    "NEW_ARRIVALS": "وصل حديثاً",
+    "PRODUCT_DETAILS": "تفاصيل المنتج",
+    "SEARCH_RESULTS": "نتائج البحث",
+    "PROFILE": "ملفي الشخصي",
+    "PREVIOUS_ORDERS": "سجل الطلبات",
+    "CHECKOUT": "إتمام الشراء",
+    "CONTACT_US": "اتصل بنا",
+    "POLICY": "سياسة الخصوصية",
+    "LOGIN": "تسجيل الدخول",
+    "ORDER_SUCCESS": "تم تقديم الطلب بنجاح"
+  },
   "ENUMS": {
     "ORDER_STATUS": {
       "CREATED": "تم الإنشاء",

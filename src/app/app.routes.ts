@@ -21,13 +21,13 @@ export const routes: Routes = [
         path: '',
         loadComponent: () =>
           import('./components/home/home').then((m) => m.Home),
-        title: 'Home',
+        data: { titleKey: 'TABS.HOME' },
       },
       {
         path: 'home',
         loadComponent: () =>
           import('./components/home/home').then((m) => m.Home),
-        title: 'Home',
+        data: { titleKey: 'TABS.HOME' },
       },
       {
         path: 'allProducts',
@@ -35,7 +35,7 @@ export const routes: Routes = [
           import('./components/all-products/all-products').then(
             (m) => m.AllProducts,
           ),
-        title: 'All Products',
+        data: { titleKey: 'TABS.ALL_PRODUCTS' },
       },
       {
         path: 'discount-products',
@@ -43,7 +43,7 @@ export const routes: Routes = [
           import('./components/discount-Products/discount-Products').then(
             (m) => m.DiscountProductsComponent,
           ),
-        title: 'Discount Products',
+        data: { titleKey: 'TABS.DISCOUNT_PRODUCTS' },
       },
       {
         path: 'new-arrival-products',
@@ -51,7 +51,7 @@ export const routes: Routes = [
           import('./components/new-arrival-products/new-arrival-products').then(
             (m) => m.NewArrivalProductsComponent,
           ),
-        title: 'New Arrival Products',
+        data: { titleKey: 'TABS.NEW_ARRIVALS' },
       },
       {
         path: 'product-details/:id',
@@ -59,7 +59,7 @@ export const routes: Routes = [
           import('./components/product-details/product-details').then(
             (m) => m.ProductDetails,
           ),
-        title: 'Product Details',
+        data: { titleKey: 'TABS.PRODUCT_DETAILS' },
       },
       {
         path: 'search-results',
@@ -67,7 +67,7 @@ export const routes: Routes = [
           import('./components/search-results/search-results/search-results').then(
             (m) => m.SearchResults,
           ),
-        title: 'Search Results',
+        data: { titleKey: 'TABS.SEARCH_RESULTS' },
       },
       {
         path: 'profile',
@@ -76,6 +76,7 @@ export const routes: Routes = [
             (m) => m.ProfileComponent,
           ),
         canActivate: [authGuard],
+        data: { titleKey: 'TABS.PROFILE' },
       },
       {
         path: 'previous-orders',
@@ -84,25 +85,25 @@ export const routes: Routes = [
             (m) => m.PreviousOrders,
           ),
         canActivate: [authGuard],
-        title: 'Previous Orders',
+        data: { titleKey: 'TABS.PREVIOUS_ORDERS' },
       },
       {
         path: 'order',
         loadComponent: () =>
           import('./components/order/order').then((m) => m.Order),
-        title: 'Checkout',
+        data: { titleKey: 'TABS.CHECKOUT' },
       },
       {
         path: 'contact-us',
         loadComponent: () =>
           import('./components/contact-us/contact-us').then((m) => m.ContactUs),
-        title: 'Contact-us',
+        data: { titleKey: 'TABS.CONTACT_US' },
       },
       {
         path: 'policy',
         loadComponent: () =>
           import('./components/policy/policy').then((m) => m.Policy),
-        title: 'Policy',
+        data: { titleKey: 'TABS.POLICY' },
       },
     ],
   },
@@ -112,7 +113,7 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () =>
       import('./components/login/login').then((m) => m.Login),
-    title: 'Login',
+    data: { titleKey: 'TABS.LOGIN' },
   },
 
   // Notfound
@@ -120,5 +121,6 @@ export const routes: Routes = [
     path: 'order-confirmation',
     loadComponent: () =>
       import('./components/not-found/not-found').then((m) => m.NotFound),
+    data: { titleKey: 'TABS.ORDER_SUCCESS' },
   },
 ];

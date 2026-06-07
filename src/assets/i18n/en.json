@@ -478,6 +478,21 @@
     "INVALID_PHONE": "Please enter a valid Egyptian phone number.",
     "INVALID_VALUE": "Please enter a valid value."
   },
+  "TABS": {
+    "HOME": "Home",
+    "ALL_PRODUCTS": "All Products",
+    "DISCOUNT_PRODUCTS": "Discount Products",
+    "NEW_ARRIVALS": "New Arrivals",
+    "PRODUCT_DETAILS": "Product Details",
+    "SEARCH_RESULTS": "Search Results",
+    "PROFILE": "My Profile",
+    "PREVIOUS_ORDERS": "Order History",
+    "CHECKOUT": "Checkout",
+    "CONTACT_US": "Contact Us",
+    "POLICY": "Privacy Policy",
+    "LOGIN": "Sign In",
+    "ORDER_SUCCESS": "Order Placed Successfully"
+  },
   "ENUMS": {
     "ORDER_STATUS": {
       "CREATED": "Created",

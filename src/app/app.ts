@@ -17,6 +17,7 @@ import { filter } from 'rxjs';
 import { Splash } from './components/splash/splash';
 
 import { SpinnerService } from './shared/services/SpinnerService/spinner-service';
+import { TitleService } from './shared/services/title.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,6 @@ import { SpinnerService } from './shared/services/SpinnerService/spinner-service
   styleUrl: './app.css',
 })
 export class App implements AfterViewInit, OnInit {
-  protected title = 'E-Commerce CashLook';
   isLoading = true;
   constructor(
     public routerState: RouterStateService,
@@ -34,7 +34,8 @@ export class App implements AfterViewInit, OnInit {
     private realTimeService: RealTimeService,
     private router: Router,
     private cartService: CartItemService,
-    private spinner: SpinnerService
+    private spinner: SpinnerService,
+    private titleService: TitleService
   ) {
     this.spinner.loading$.subscribe((visible) => {
       this.isLoading = visible;
@@ -42,6 +43,8 @@ export class App implements AfterViewInit, OnInit {
   }
 
   ngOnInit() {
+    this.titleService.init();
+
     if (isPlatformBrowser(this.platformId)) {
       // تحديث السلة عند بدء التطبيق
       this.cartService.refreshCartState();
