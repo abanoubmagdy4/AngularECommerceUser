@@ -111,22 +111,38 @@ export class AllProducts implements OnInit {
   applyFilters(filters: ProductFilters) {
     this.activeFilters = filters;
     this.currentPageIndex = 1;
+    this.loadWithActiveFilters(1);
+  }
+
+  private loadWithActiveFilters(pageIndex: number): void {
+    const filters = this.activeFilters;
+    const pageSize = 12;
+
     this._ProductService
       .getPaginatedProducts(
         1,
-        12,
+        1000,
         filters.search,
         filters.categoryId,
-        filters.minPrice,
-        filters.maxPrice,
         undefined,
         undefined,
-        filters.sortBy,
+        undefined,
+        undefined,
+        filters.sortBy !== 'default' ? filters.sortBy : undefined,
       )
       .subscribe((res) => {
-        console.log('Filtered products received:', res);
-        this.filteredProducts = this.sortProducts(res.items, filters.sortBy);
-        this.totalPages = res.totalPages;
+        const items = res.items.filter(
+          (p) =>
+            p.priceAfterDiscount >= filters.minPrice &&
+            p.priceAfterDiscount <= filters.maxPrice,
+        );
+        const sortedItems = this.sortProducts(items, filters.sortBy);
+        this.totalPages = Math.ceil(sortedItems.length / pageSize);
+        this.currentPageIndex = pageIndex;
+        this.filteredProducts = sortedItems.slice(
+          (pageIndex - 1) * pageSize,
+          pageIndex * pageSize,
+        );
       });
   }
 
@@ -217,7 +233,7 @@ export class AllProducts implements OnInit {
   changePage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPageIndex = page;
-      this.loadProducts(page);
+      this.loadWithActiveFilters(page);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
