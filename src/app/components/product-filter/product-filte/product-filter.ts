@@ -53,9 +53,7 @@ export class ProductFilter implements OnInit, OnDestroy {
   maxPrice = 10000;
 
   selectedCategoryId?: number;
-  categories: any[] = [];
-  parentCategories: any[] = [];
-  childCategories: Map<number, any[]> = new Map();
+  categoryTree: any[] = [];
 
   private searchSubject = new Subject<string>();
   private sub = new Subscription();
@@ -93,35 +91,35 @@ export class ProductFilter implements OnInit, OnDestroy {
 
   loadCategories() {
     this.categoryService.getCategories().subscribe((res) => {
-      this.categories = res.map((cat: any) => ({ ...cat, open: false }));
-      this.organizeCategories();
+      const flat = res.map((cat: any) => ({ ...cat, open: true, children: [] }));
+      this.categoryTree = this.buildTree(flat);
     });
   }
 
-  organizeCategories() {
-    this.parentCategories = this.categories.filter(
-      (cat) => cat.parentID === null || cat.parentID === undefined,
-    );
-    this.childCategories.clear();
-
-    this.categories.forEach((cat) => {
-      if (cat.parentID !== null && cat.parentID !== undefined) {
-        if (!this.childCategories.has(cat.parentID)) {
-          this.childCategories.set(cat.parentID, []);
-        }
-        this.childCategories.get(cat.parentID)!.push({ ...cat, open: false });
+  buildTree(flat: any[]): any[] {
+    const map = new Map<number, any>();
+    flat.forEach((cat) => map.set(cat.id, cat));
+    const roots: any[] = [];
+    flat.forEach((cat) => {
+      if (cat.parentID !== null && cat.parentID !== undefined && map.has(cat.parentID)) {
+        map.get(cat.parentID)!.children.push(cat);
+      } else {
+        roots.push(cat);
       }
     });
+    return roots;
+  }
+
+  get parentCategories(): any[] {
+    return this.categoryTree;
   }
 
   getChildCategories(parentId: number): any[] {
-    return this.childCategories.get(parentId) || [];
+    const parent = this.categoryTree.find((c) => c.id === parentId);
+    return parent ? parent.children : [];
   }
 
   toggleCategory(cat: any) {
-    this.categories.forEach((c) => {
-      if (c !== cat) c.open = false;
-    });
     cat.open = !cat.open;
   }
 

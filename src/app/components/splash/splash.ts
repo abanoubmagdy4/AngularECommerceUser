@@ -21,7 +21,7 @@ export class Splash implements OnInit {
 
   private initializeSplash(): void {
     if (isPlatformBrowser(this.platformId)) {
-      const splashShown = localStorage.getItem('splashShown');
+      const splashShown = sessionStorage.getItem('splashShown');
 
       if (splashShown) {
         this.showSplash = false;
@@ -30,7 +30,7 @@ export class Splash implements OnInit {
 
         setTimeout(() => {
           this.showSplash = false;
-          localStorage.setItem('splashShown', 'true');
+          sessionStorage.setItem('splashShown', 'true');
         }, 7000);
       }
     } else {

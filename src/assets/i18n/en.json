@@ -394,6 +394,7 @@
   },
   "FILTER": {
     "TITLE": "Filters",
+    "LABEL": "Filters",
     "SEARCH_PLACEHOLDER": "Search products...",
     "PRICE_RANGE": "Price Range",
     "MIN_PRICE": "Min: ",

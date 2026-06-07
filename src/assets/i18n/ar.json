@@ -394,6 +394,7 @@
   },
   "FILTER": {
     "TITLE": "التصفية",
+    "LABEL": "تصفية",
     "SEARCH_PLACEHOLDER": "ابحث في المنتجات...",
     "PRICE_RANGE": "نطاق السعر",
     "MIN_PRICE": "أدنى: ",

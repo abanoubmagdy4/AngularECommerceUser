@@ -80,6 +80,33 @@ input[type="radio"]:disabled {
     }
 }
 
+/* Override browser default blue accent on select dropdowns */
+select {
+    accent-color: #111827 !important;
+    color-scheme: dark !important;
+}
+
+select:hover {
+    border-color: #111827 !important;
+}
+
+select option:checked,
+select option:hover {
+    background: #111827 !important;
+    color: #ffffff !important;
+}
+
+/* Webkit-specific override for dropdown background */
+select::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+/* Filter backdrop - glass blur effect */
+.filter-backdrop {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
 /* Responsive font size for small screens */
 @media (max-width: 768px) {
     .filter-label {

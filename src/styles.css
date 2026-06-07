@@ -198,3 +198,19 @@ html[dir="rtl"] .fa-chevron-right {
 html[dir="rtl"] .fa-chevron-left {
     transform: scaleX(-1);
 }
+
+/* Override browser default blue accent on select dropdowns */
+select {
+    accent-color: #111827 !important;
+    color-scheme: dark !important;
+}
+
+select:hover {
+    border-color: #111827 !important;
+}
+
+select option:checked,
+select option:hover {
+    background: #111827 !important;
+    color: #ffffff !important;
+}

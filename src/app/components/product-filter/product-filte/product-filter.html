@@ -52,24 +52,26 @@
     (click)="clearCategory()">
     {{ 'FILTER.ALL' | translate }}
   </div>
-  <div *ngFor="let parentCat of parentCategories" class="mb-3">
-    <div
-      class="flex justify-between items-center cursor-pointer font-semibold text-gray-800 hover:text-blue-600 transition py-1"
-      (click)="toggleCategory(parentCat); selectCategory(parentCat.id)">
-      <span [class.text-blue-600]="selectedCategoryId === parentCat.id">{{ getCategoryName(parentCat) }}</span>
-      <span *ngIf="getChildCategories(parentCat.id).length > 0">{{ parentCat.open ? '−' : '+' }}</span>
-    </div>
-    @if(parentCat.open) {
-    <div class="ml-4 mt-2 space-y-1">
-      <div *ngFor="let childCat of getChildCategories(parentCat.id)"
-        class="cursor-pointer text-sm text-gray-600 hover:text-blue-600 transition py-1 pl-2"
-        [class.text-blue-600]="selectedCategoryId === childCat.id"
-        (click)="selectCategory(childCat.id); $event.stopPropagation()">
-        {{ getCategoryName(childCat) }}
+
+  <ng-template #desktopCatTree let-nodes="nodes" let-depth="depth">
+    <div *ngFor="let cat of nodes" [style.margin-left.px]="depth * 12">
+      <div class="flex justify-between items-center cursor-pointer py-1 transition"
+        [class.font-semibold]="depth === 0"
+        [class.text-sm]="depth > 0"
+        [class.text-gray-800]="selectedCategoryId !== cat.id"
+        [class.text-blue-600]="selectedCategoryId === cat.id">
+        <span (click)="selectCategory(cat.id)">{{ getCategoryName(cat) }}</span>
+        <span *ngIf="cat.children?.length > 0"
+          class="text-gray-400 hover:text-gray-700 px-1 select-none text-xs"
+          (click)="toggleCategory(cat)">{{ cat.open ? '−' : '+' }}</span>
+      </div>
+      <div *ngIf="cat.children?.length > 0 && cat.open" class="border-l border-gray-200 ml-1 pl-2 mt-0.5">
+        <ng-container *ngTemplateOutlet="desktopCatTree; context: { nodes: cat.children, depth: depth + 1 }"></ng-container>
       </div>
     </div>
-    }
-  </div>
+  </ng-template>
+
+  <ng-container *ngTemplateOutlet="desktopCatTree; context: { nodes: categoryTree, depth: 0 }"></ng-container>
 
   <!-- All Products Button -->
   <button class="mt-6 bg-gray-800 hover:bg-black text-white px-4 py-2 w-full rounded-lg shadow-md transition"
@@ -80,93 +82,141 @@
 
 <!-- Mobile Filter Button -->
 <div class="lg:hidden p-2 flex justify-between items-center">
-  <button (click)="showMobileFilter = true" class="text-3xl" [attr.aria-label]="'FILTER.OPEN' | translate">
-    <i class="fas fa-filter"></i>
+  <button (click)="showMobileFilter = true"
+    class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md active:scale-95 transition-transform"
+    [attr.aria-label]="'FILTER.OPEN' | translate">
+    <i class="fas fa-sliders-h text-xs"></i>
+    <span>{{ 'FILTER.LABEL' | translate }}</span>
   </button>
 </div>
 
 <!-- Mobile Filter Offcanvas -->
-<div class="filter-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300"
+<div class="filter-backdrop fixed inset-0 z-50 backdrop-blur-sm"
   *ngIf="showMobileFilter" (click)="closeFilter($event)">
   <div
-    class="mobile-filter-panel absolute end-0 w-72 bg-white h-full p-4 overflow-y-auto transform transition-transform duration-300">
-    <button class="mb-4 text-lg font-bold" (click)="showMobileFilter = false">
-      ✕ {{ 'FILTER.CLOSE' | translate }}
-    </button>
+    class="mobile-filter-panel absolute end-0 w-80 bg-white h-full flex flex-col shadow-2xl">
 
-    <!-- Search -->
-    <div class="mb-4">
-      <button class="w-full bg-gray-200 py-2 rounded mb-2" (click)="toggleSearchInput()">
-        <i class="fas fa-search"></i>
+    <!-- Panel Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50 shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-sliders-h text-gray-700"></i>
+        <span class="font-bold text-gray-800 text-base">{{ 'FILTER.CATEGORIES' | translate }}</span>
+      </div>
+      <button
+        class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 transition"
+        (click)="showMobileFilter = false">
+        <i class="fas fa-times text-sm"></i>
       </button>
-      <input *ngIf="showSearchInput" type="text" [value]="searchTerm" (input)="onSearchInput($any($event.target).value)"
-        (keyup.enter)="emitFilters()" [placeholder]="'FILTER.SEARCH_PLACEHOLDER' | translate"
-        class="w-full p-2 border rounded" />
     </div>
 
-    <!-- Sort -->
-    <div class="mb-4">
-      <label class="block font-bold mb-2">{{ 'SORT.LABEL' | translate }}</label>
-      <select [(ngModel)]="selectedSort" (change)="onSortChange()" class="w-full p-2 border rounded">
-        <option *ngFor="let opt of sortOptions" [value]="opt.key">
-          {{ opt.labelKey | translate }}
-        </option>
-      </select>
-    </div>
+    <!-- Scrollable Content -->
+    <div class="flex-1 overflow-y-auto px-5 py-4 space-y-5">
 
-    <!-- Price Range -->
-    <div class="mb-4">
-      <label class="block font-bold mb-2">{{ 'FILTER.PRICE_RANGE' | translate }}</label>
-      <div class="flex gap-2 mb-2">
-        <div class="flex-1">
+      <!-- Search -->
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+          {{ 'FILTER.SEARCH_PLACEHOLDER' | translate }}
+        </label>
+        <div class="relative">
+          <i class="fas fa-search absolute start-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+          <input type="text" [value]="searchTerm" (input)="onSearchInput($any($event.target).value)"
+            (keyup.enter)="emitFilters(); showMobileFilter = false"
+            [placeholder]="'FILTER.SEARCH_PLACEHOLDER' | translate"
+            class="w-full ps-9 pe-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 bg-gray-50" />
+        </div>
+      </div>
+
+      <hr class="border-gray-100">
+
+      <!-- Sort -->
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+          {{ 'SORT.LABEL' | translate }}
+        </label>
+        <select [(ngModel)]="selectedSort" (change)="onSortChange(); showMobileFilter = false"
+          class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 bg-gray-50 appearance-none">
+          <option *ngFor="let opt of sortOptions" [value]="opt.key">
+            {{ opt.labelKey | translate }}
+          </option>
+        </select>
+      </div>
+
+      <hr class="border-gray-100">
+
+      <!-- Price Range -->
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
+          {{ 'FILTER.PRICE_RANGE' | translate }}
+        </label>
+        <div class="flex gap-2 mb-3">
           <input type="number" [(ngModel)]="minPrice" [min]="minRange" [max]="maxRange"
-            [placeholder]="'FILTER.MIN' | translate" class="w-full p-2 border rounded" />
-        </div>
-        <div class="flex-1">
+            [placeholder]="'FILTER.MIN' | translate"
+            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 bg-gray-50" />
           <input type="number" [(ngModel)]="maxPrice" [min]="minRange" [max]="maxRange"
-            [placeholder]="'FILTER.MAX' | translate" class="w-full p-2 border rounded" />
+            [placeholder]="'FILTER.MAX' | translate"
+            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 bg-gray-50" />
+        </div>
+        <div class="flex gap-2">
+          <button (click)="applyPriceFilter(); showMobileFilter = false"
+            class="flex-1 bg-gray-900 hover:bg-black text-white py-2.5 rounded-xl text-sm font-medium transition active:scale-95">
+            {{ 'FILTER.APPLY' | translate }}
+          </button>
+          <button (click)="resetPriceFilter(); showMobileFilter = false"
+            class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium transition active:scale-95">
+            {{ 'FILTER.RESET_PRICE' | translate }}
+          </button>
         </div>
       </div>
-      <div class="flex gap-2">
-        <button (click)="applyPriceFilter()"
-          class="flex-1 bg-[#2f2f2f] hover:bg-[#1a1a1a] text-white px-4 py-2 rounded transition">
-          {{ 'FILTER.APPLY' | translate }}
-        </button>
-        <button (click)="resetPriceFilter()"
-          class="flex-1 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded transition">
-          {{ 'FILTER.RESET_PRICE' | translate }}
-        </button>
+
+      <hr class="border-gray-100">
+
+      <!-- Categories -->
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
+          {{ 'FILTER.CATEGORIES' | translate }}
+        </label>
+
+        <ng-template #mobileCatTree let-nodes="nodes" let-depth="depth">
+          <div *ngFor="let cat of nodes" [style.margin-left.px]="depth * 10">
+            <div class="flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-sm transition"
+              [class.bg-gray-900]="selectedCategoryId === cat.id"
+              [class.text-white]="selectedCategoryId === cat.id"
+              [class.text-gray-700]="selectedCategoryId !== cat.id"
+              [class.font-medium]="depth === 0"
+              [class.text-xs]="depth > 0">
+              <span (click)="selectCategory(cat.id); showMobileFilter = false">{{ getCategoryName(cat) }}</span>
+              <button *ngIf="cat.children?.length > 0"
+                class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-black hover:bg-opacity-10 text-xs select-none shrink-0"
+                (click)="toggleCategory(cat)">
+                {{ cat.open ? '−' : '+' }}
+              </button>
+            </div>
+            <div *ngIf="cat.children?.length > 0 && cat.open" class="ms-2 border-l-2 border-gray-100 ps-2 mt-0.5 mb-0.5">
+              <ng-container *ngTemplateOutlet="mobileCatTree; context: { nodes: cat.children, depth: depth + 1 }"></ng-container>
+            </div>
+          </div>
+        </ng-template>
+
+        <div class="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer text-sm transition mb-1"
+          [class.bg-gray-900]="!selectedCategoryId"
+          [class.text-white]="!selectedCategoryId"
+          [class.text-gray-700]="!!selectedCategoryId"
+          (click)="clearCategory(); showMobileFilter = false">
+          <i class="fas fa-th-large text-xs opacity-70"></i>
+          {{ 'FILTER.ALL' | translate }}
+        </div>
+
+        <ng-container *ngTemplateOutlet="mobileCatTree; context: { nodes: categoryTree, depth: 0 }"></ng-container>
       </div>
     </div>
 
-    <!-- Categories -->
-    <div class="font-bold mb-2">{{ 'FILTER.CATEGORIES' | translate }}</div>
-    <ul class="space-y-2 py-2">
-      <li class="cursor-pointer text-sm hover:text-blue-600 transition" [class.font-bold]="!selectedCategoryId"
-        (click)="clearCategory()">
-        {{ 'FILTER.ALL' | translate }}
-      </li>
-      <li *ngFor="let parentCat of parentCategories">
-        <div class="flex justify-between items-center cursor-pointer font-semibold py-1"
-          (click)="toggleCategory(parentCat); selectCategory(parentCat.id)">
-          <span [class.text-blue-600]="selectedCategoryId === parentCat.id">{{ getCategoryName(parentCat) }}</span>
-          <span *ngIf="getChildCategories(parentCat.id).length > 0">{{ parentCat.open ? '−' : '+' }}</span>
-        </div>
-        @if(parentCat.open) {
-        <div class="ml-4 mt-2 space-y-1">
-          <div *ngFor="let childCat of getChildCategories(parentCat.id)"
-            class="cursor-pointer text-sm text-gray-600 hover:text-blue-600 transition py-1 pl-2"
-            [class.text-blue-600]="selectedCategoryId === childCat.id"
-            (click)="selectCategory(childCat.id); $event.stopPropagation()">
-            {{ getCategoryName(childCat) }}
-          </div>
-        </div>
-        }
-      </li>
-    </ul>
-
-    <button class="mt-4 bg-gray-800 hover:bg-black text-white px-4 py-2 w-full rounded" (click)="resetFilters()">
-      {{ 'FILTER.RESET' | translate }}
-    </button>
+    <!-- Panel Footer -->
+    <div class="px-5 py-4 border-t border-gray-100 bg-gray-50 shrink-0">
+      <button
+        class="w-full bg-gray-900 hover:bg-black text-white py-3 rounded-xl font-semibold text-sm transition active:scale-95"
+        (click)="resetFilters(); showMobileFilter = false">
+        {{ 'FILTER.RESET' | translate }}
+      </button>
+    </div>
   </div>
 </div>
