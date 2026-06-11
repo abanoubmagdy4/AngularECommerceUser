@@ -17,8 +17,8 @@
       <button
         class="px-3 py-1 rounded-md text-sm transition-colors"
         [ngClass]="{
-            ' text-black hover:bg-gray-100': page === currentPageIndex,
-            ' text-gray-300  hover:bg-gray-100': page !== currentPageIndex
+            'bg-gray-900 text-white': page === currentPageIndex,
+            'text-gray-600 hover:bg-gray-100': page !== currentPageIndex
           }"
         (click)="changePage(page)"
       >

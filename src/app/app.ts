@@ -14,7 +14,6 @@ import { isPlatformBrowser } from '@angular/common';
 import { Spinner } from './components/spinner/spinner';
 import { CartItemService } from './shared/services/cart/cart.service';
 import { filter } from 'rxjs';
-import { Splash } from './components/splash/splash';
 
 import { SpinnerService } from './shared/services/SpinnerService/spinner-service';
 import { TitleService } from './shared/services/title.service';
@@ -22,7 +21,7 @@ import { TitleService } from './shared/services/title.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Spinner, Splash],
+  imports: [RouterOutlet, Spinner],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

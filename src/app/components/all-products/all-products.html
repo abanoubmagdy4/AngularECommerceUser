@@ -6,59 +6,61 @@
     <app-product-filter (filtersChanged)="applyFilters($event)"></app-product-filter>
   </div>
 
-  <!-- منتجات -->
-  <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 lg:px-8 mt-6 lg:mt-0 w-full">
-    @for (prd of filteredProducts; track $index;) {
-    <section class="rounded-lg overflow-hidden flex flex-col hover:scale-110">
-      <a [routerLink]="['/product-details', prd.id]" class="flex flex-col items-center mb-4">
-        <div class="relative h-64 sm:h-72 lg:h-80 w-full overflow-hidden group">
-          <!-- Sale Badge -->
-          @if(calculateDiscountPercentage(prd) > 0) {
-          <div class="absolute top-3 left-3 z-10">
-            <div
-              class="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-              -{{calculateDiscountPercentage(prd)}}%
+  <!-- منتجات + Pagination -->
+  <div class="flex flex-col w-full">
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 lg:px-8 mt-6 lg:mt-0 w-full">
+      @for (prd of filteredProducts; track $index;) {
+      <section class="rounded-lg overflow-hidden flex flex-col hover:scale-110">
+        <a [routerLink]="['/product-details', prd.id]" class="flex flex-col items-center mb-4">
+          <div class="relative h-64 sm:h-72 lg:h-80 w-full overflow-hidden group">
+            <!-- Sale Badge -->
+            @if(calculateDiscountPercentage(prd) > 0) {
+            <div class="absolute top-3 left-3 z-10">
+              <div
+                class="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                -{{calculateDiscountPercentage(prd)}}%
+              </div>
             </div>
+            }
+
+            <!-- الصورة الأساسية -->
+            <img [src]="getImageUrl(prd, 0)" [attr.alt]="prd | localizedName"
+              class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0" />
+
+            <!-- الصورة الثانية تظهر مع الهوفر -->
+            <img [src]="getImageUrl(prd, 1)" [attr.alt]="(prd | localizedName) + ' alt'"
+              class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
           </div>
+
+          <h3 class="mt-4 text-sm font-bold text-gray-900 sm:text-base">
+            {{ prd | localizedName }}
+          </h3>
+          @if(calculateDiscountPercentage(prd) > 0) {
+          <p style="color: #4e4e4e" class="mt-1 line-through">
+            {{prd.price | currency : 'EGP ' : 'code'}}
+          </p>
+          <p class="text-black font-bold mt-1">
+            {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+          </p>
+          } @else {
+          <p class="mt-2 font-bold text-black">
+            {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
+          </p>
           }
-
-          <!-- الصورة الأساسية -->
-          <img [src]="getImageUrl(prd, 0)" [attr.alt]="prd | localizedName"
-            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0" />
-
-          <!-- الصورة الثانية تظهر مع الهوفر -->
-          <img [src]="getImageUrl(prd, 1)" [attr.alt]="(prd | localizedName) + ' alt'"
-            class="absolute inset-0 w-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
-        </div>
-
-        <h3 class="mt-4 text-sm font-bold text-gray-900 sm:text-base">
-          {{ prd | localizedName }}
+        </a>
+      </section>
+      } @if(filteredProducts.length === 0) {
+      <section class="flex justify-center items-center mx-auto px-8">
+        <h3 style="color: #757575" class="mt-4 text-lg font-bold sm:text-xl">
+          {{ 'COMMON.NO_RESULTS' | translate }}
         </h3>
-        @if(calculateDiscountPercentage(prd) > 0) {
-        <p style="color: #4e4e4e" class="mt-1 line-through">
-          {{prd.price | currency : 'EGP ' : 'code'}}
-        </p>
-        <p class="text-black font-bold mt-1">
-          {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
-        </p>
-        } @else {
-        <p class="mt-2 font-bold text-black">
-          {{prd.priceAfterDiscount | currency : 'EGP ' : 'code'}}
-        </p>
-        }
-      </a>
+      </section>
+      }
     </section>
-    } @if(filteredProducts.length === 0) {
-    <section class="flex justify-center items-center mx-auto px-8">
-      <h3 style="color: #757575" class="mt-4 text-lg font-bold sm:text-xl">
-        {{ 'COMMON.NO_RESULTS' | translate }}
-      </h3>
-    </section>
-    }
-  </section>
-</div>
 
-@if(filteredProducts.length !== 0) {
-<app-pagination [currentPageIndex]="currentPageIndex" [totalPages]="totalPages" (pageChange)="changePage($event)">
-</app-pagination>
-}
+    @if(filteredProducts.length !== 0) {
+    <app-pagination [currentPageIndex]="currentPageIndex" [totalPages]="totalPages" (pageChange)="changePage($event)">
+    </app-pagination>
+    }
+  </div>
+</div>

@@ -120,6 +120,13 @@ export class Order implements OnInit, OnDestroy {
     this.loadGovernorates();
     this.prefillCustomerInfo();
     this.loadCart();
+
+    const token = this.authService.getToken();
+    if (!token) {
+      this.useNewAddress = true;
+      this.addNewAddressControl.setValue(true, { emitEvent: false });
+      this.onToggleNewAddress();
+    }
   }
 
   private initializeAddressControls(): void {
@@ -135,13 +142,28 @@ export class Order implements OnInit, OnDestroy {
     });
   }
 
+  private sanitizePhoneNumber(phone: string | null | undefined): string {
+    if (!phone) return '';
+    let sanitized = phone.toString().replace(/\D/g, '');
+    if (sanitized.startsWith('20') && sanitized.length > 10) {
+      sanitized = sanitized.substring(2);
+    }
+    if (sanitized.startsWith('2') && sanitized.length > 10) {
+      sanitized = sanitized.substring(1);
+    }
+    if (sanitized.length === 10 && sanitized.startsWith('1')) {
+      sanitized = '0' + sanitized;
+    }
+    return sanitized;
+  }
+
   private prefillCustomerInfo(): void {
     if (this.order.customerInfo) {
       this.orderForm.patchValue({
         email: this.order.customerInfo.email || '',
         firstName: this.order.customerInfo.firstName || '',
         lastName: this.order.customerInfo.lastName || '',
-        phoneNumber: this.order.customerInfo.phoneNumber || '',
+        phoneNumber: this.sanitizePhoneNumber(this.order.customerInfo.phoneNumber),
       });
     }
   }
@@ -203,7 +225,7 @@ export class Order implements OnInit, OnDestroy {
             email: customerData.email || '',
             firstName: customerData.firstName || '',
             lastName: customerData.lastName || '',
-            phoneNumber: customerData.phoneNumber || '',
+            phoneNumber: this.sanitizePhoneNumber(customerData.phoneNumber),
           });
           this.cdr.detectChanges();
         },
@@ -215,13 +237,32 @@ export class Order implements OnInit, OnDestroy {
   }
 
   completeCheckout(): void {
+    // Sanitize phone number before validation
+    const phoneControl = this.orderForm.get('phoneNumber');
+    if (phoneControl && phoneControl.value) {
+      phoneControl.setValue(
+        this.sanitizePhoneNumber(phoneControl.value),
+        { emitEvent: false },
+      );
+    }
+
     // التحقق من صحة الفورم
     if (this.orderForm.invalid) {
       this.orderForm.markAllAsTouched();
+      const invalidControls: string[] = [];
+      Object.keys(this.orderForm.controls).forEach((key) => {
+        const control = this.orderForm.get(key);
+        if (control && control.invalid) {
+          invalidControls.push(key);
+        }
+      });
+      const invalidFieldsHtml = invalidControls.length
+        ? `<div style="margin-top:8px;"><small>Invalid fields: ${invalidControls.join(', ')}</small></div>`
+        : '';
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        html: '<small>Please complete all required fields correctly.</small>',
+        html: `<small>Please complete all required fields correctly.</small>${invalidFieldsHtml}`,
         toast: true,
         position: 'bottom-end',
         background: '#651616',
